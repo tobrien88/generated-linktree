@@ -122,7 +122,7 @@ export default function LandingScreen() {
           <AutoVideo
             source={heroSrc}
             videoPath="/hero_demo.mp4"
-            posterPath="/homepage1.png"
+            posterPath="/homepage-billboard.png"
             style={styles.heroVideo}
           />
         </View>

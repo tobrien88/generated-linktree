@@ -159,7 +159,7 @@ export default function AIPreviewScreen() {
 
         {/* Rationale section */}
         <View style={styles.rationaleSection}>
-          <Text style={styles.rationaleTitle}>Why AI chose this</Text>
+          <Text style={styles.rationaleTitle}>Why we selected this</Text>
           <Text style={styles.rationaleSub}>Every choice is based on your actual social data</Text>
           <View style={styles.rationaleList}>
             {RATIONALE.map((r) => (

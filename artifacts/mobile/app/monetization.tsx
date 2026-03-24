@@ -1,4 +1,5 @@
 import { Feather, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import { SvgXml } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
@@ -92,14 +93,24 @@ const TIER_META: TierMeta[] = [
 
 const PREVIEW_LINKS_TEXT = ["Free SE Asia Travel Guide", "Follow me on TikTok", "My Lightroom Preset Pack"];
 
+const TIKTOK_SVG = `<svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.76a8.24 8.24 0 0 0 4.84 1.55V6.88a4.87 4.87 0 0 1-1.07-.19z"/>
+</svg>`;
+
 const PREVIEW_LINKS_THUMB = [
   {
     title: "Free SE Asia Travel Guide",
     thumbnail: require("../assets/images/monkey-thai-market.png") as ReturnType<typeof require>,
+    thumbBg: "transparent",
+    thumbFit: "cover" as const,
+    useSvg: false,
   },
   {
     title: "Follow me on TikTok",
-    thumbnail: require("../assets/images/tiktok-logo-nobg.png") as ReturnType<typeof require>,
+    thumbnail: null,
+    thumbBg: "#010101",
+    thumbFit: "contain" as const,
+    useSvg: true,
   },
 ];
 
@@ -144,7 +155,13 @@ function ProfilePreview({ tierId }: { tierId: Tier }) {
             {socials("rgba(255,255,255,0.78)")}
             {PREVIEW_LINKS_THUMB.map((link) => (
               <View key={link.title} style={styles.previewLinkDark}>
-                <Image source={link.thumbnail} style={styles.previewLinkThumb} contentFit="cover" />
+                <View style={[styles.previewLinkThumb, { backgroundColor: link.thumbBg }]}>
+                  {link.useSvg ? (
+                    <SvgXml xml={TIKTOK_SVG} width={16} height={16} />
+                  ) : (
+                    <Image source={link.thumbnail} style={styles.previewLinkThumbImg} contentFit={link.thumbFit} />
+                  )}
+                </View>
                 <Text style={styles.previewLinkTextDark} numberOfLines={1}>{link.title}</Text>
               </View>
             ))}
@@ -490,6 +507,13 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 50,
     flexShrink: 0,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  previewLinkThumbImg: {
+    width: "100%" as unknown as number,
+    height: "100%" as unknown as number,
   },
   previewLinkTextDark: {
     fontSize: 11,

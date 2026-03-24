@@ -157,10 +157,8 @@ const TIERS: TierConfig[] = [
         heading: "Everything in Pro, plus",
         items: [
           "0% transaction fees — keep 100% of earnings",
-          "Custom domain (yourname.com)",
-          "White-label — no Linktree branding anywhere",
-          "Unlimited automated Instagram replies",
-          "Unlimited social posts scheduling",
+          "Earn 100% commissions on affiliate products",
+          "Unlimited Instagram replies with typo detection",
           "Dedicated concierge setup session",
           "Priority support queue",
           "Early access to new features",
@@ -169,6 +167,7 @@ const TIERS: TierConfig[] = [
       {
         heading: "Team & enterprise",
         items: [
+          "Optional add-on team tools",
           "Multiple team member seats",
           "Brand kit management",
           "API access & webhooks",

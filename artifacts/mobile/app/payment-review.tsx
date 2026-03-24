@@ -111,15 +111,14 @@ const TIER_DATA: Record<string, {
         heading: "Creator Commerce",
         items: [
           "0% transaction fees — keep 100% of earnings",
-          "Custom domain (yourname.com)",
-          "White-label — no Linktree branding anywhere",
+          "Earn 100% commissions on affiliate products",
+          "Unlimited Instagram replies with typo detection",
         ],
       },
       {
         heading: "Unlimited Creator Tools",
         items: [
-          "Unlimited automated Instagram replies",
-          "Unlimited social posts scheduling",
+          "Optional add-on team tools",
           "Dedicated concierge setup session",
           "Priority support queue",
           "Early access to new features",

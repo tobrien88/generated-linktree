@@ -15,7 +15,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useOnboarding } from "@/context/OnboardingContext";
 
 type PaymentMethod = "card" | "googlepay" | "paypal";
-type BillingCycle = "annual" | "monthly";
 
 const TIER_PRICES: Record<string, { monthly: number; annual: number; name: string; hasTrial: boolean }> = {
   starter: { monthly: 8, annual: 6 * 12, name: "Starter", hasTrial: false },
@@ -37,18 +36,15 @@ export default function PaymentScreen() {
   const tierInfo = TIER_PRICES[selectedTier] ?? TIER_PRICES.pro;
 
   const [method, setMethod] = useState<PaymentMethod>("card");
-  const [billing, setBilling] = useState<BillingCycle>("annual");
 
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [zip, setZip] = useState("");
 
-  const isAnnual = billing === "annual";
   const annualTotal = tierInfo.annual;
   const tax = 9;
-  const dueToday = tierInfo.hasTrial ? 0 : (isAnnual ? annualTotal : tierInfo.monthly);
-  const savePct = Math.round((1 - (tierInfo.annual / 12) / tierInfo.monthly) * 100);
+  const dueToday = tierInfo.hasTrial ? 0 : annualTotal;
 
   const trialEndDate = "Mar 31st, 2026";
 
@@ -190,36 +186,17 @@ export default function PaymentScreen() {
 
         {/* ─── Your trial plan ──────────────────────────── */}
         <Text style={styles.sectionHeading}>Your trial plan</Text>
-        <Text style={styles.billingCycleLabel}>Billing cycle</Text>
-
-        {/* Annual */}
-        <Pressable style={[styles.billingOption, billing === "annual" && styles.billingOptionSelected]} onPress={() => setBilling("annual")}>
-          <Radio selected={billing === "annual"} />
-          <Text style={styles.billingOptionText}>Annual</Text>
-          {billing === "annual" && (
-            <View style={styles.saveBadge}>
-              <Text style={styles.saveBadgeText}>Save {savePct}%</Text>
-            </View>
-          )}
-        </Pressable>
-
-        {/* Monthly */}
-        <Pressable style={[styles.billingOption, styles.billingOptionLast, billing === "monthly" && styles.billingOptionSelected]} onPress={() => setBilling("monthly")}>
-          <Radio selected={billing === "monthly"} />
-          <Text style={styles.billingOptionText}>Monthly</Text>
-        </Pressable>
-
         {/* Pricing summary */}
         <View style={styles.pricingRow}>
           <Text style={styles.pricingName}>Linktree {tierInfo.name}</Text>
           <View style={styles.pricingRight}>
             {tierInfo.hasTrial && (
-              <Text style={styles.pricingStrike}>${isAnnual ? annualTotal : tierInfo.monthly}.00</Text>
+              <Text style={styles.pricingStrike}>${annualTotal}.00</Text>
             )}
             {tierInfo.hasTrial ? (
               <Text style={styles.pricingFree}>Free for 7 days!</Text>
             ) : (
-              <Text style={styles.pricingAmount}>${isAnnual ? annualTotal : tierInfo.monthly}.00</Text>
+              <Text style={styles.pricingAmount}>${annualTotal}.00</Text>
             )}
           </View>
         </View>
@@ -232,7 +209,7 @@ export default function PaymentScreen() {
 
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Due on {trialEndDate}</Text>
-          <Text style={styles.summaryValue}>${isAnnual ? annualTotal : tierInfo.monthly}/year</Text>
+          <Text style={styles.summaryValue}>${annualTotal}/year</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>+ Tax</Text>

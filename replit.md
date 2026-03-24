@@ -1,96 +1,70 @@
-# Workspace
+# Linktree AI Onboarding — Expo Mobile Prototype
 
-## Overview
+## Project Overview
+A Figma-style interactive mobile prototype of an AI-powered Linktree onboarding redesign. Features a fully pre-populated fake creator persona "Nova Reyes" (@novaonthemove, lifestyle/travel) to simulate AI profile generation.
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+## Architecture
+- **Framework**: Expo SDK 54 + Expo Router (file-based routing)
+- **Language**: TypeScript
+- **State**: React Context (OnboardingContext)
+- **Navigation**: Stack navigator, no tabs
+- **Font**: Inter (400, 500, 600, 700)
 
-## Stack
-
-- **Monorepo tool**: pnpm workspaces
-- **Node.js version**: 24
-- **Package manager**: pnpm
-- **TypeScript version**: 5.9
-- **API framework**: Express 5
-- **Database**: PostgreSQL + Drizzle ORM
-- **Validation**: Zod (`zod/v4`), `drizzle-zod`
-- **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
-
-## Structure
-
-```text
-artifacts-monorepo/
-├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
-├── lib/                    # Shared libraries
-│   ├── api-spec/           # OpenAPI spec + Orval codegen config
-│   ├── api-client-react/   # Generated React Query hooks
-│   ├── api-zod/            # Generated Zod schemas from OpenAPI
-│   └── db/                 # Drizzle ORM schema + DB connection
-├── scripts/                # Utility scripts (single workspace package)
-│   └── src/                # Individual .ts scripts, run via `pnpm --filter @workspace/scripts run <script>`
-├── pnpm-workspace.yaml     # pnpm workspace (artifacts/*, lib/*, lib/integrations/*, scripts)
-├── tsconfig.base.json      # Shared TS options (composite, bundler resolution, es2022)
-├── tsconfig.json           # Root TS project references
-└── package.json            # Root package with hoisted devDeps
+## Monorepo Structure
+```
+artifacts/mobile/          ← Main Expo app
+  app/                     ← Expo Router screens
+    _layout.tsx            ← Root layout (OnboardingProvider + QueryClient)
+    index.tsx              ← Landing screen
+    username.tsx           ← Username step
+    email.tsx              ← Email/OAuth step
+    social-platforms.tsx   ← Platform picker (tap to select + handle input)
+    ai-loading.tsx         ← AI analysis loading (dark, animated orbiting icons)
+    ai-preview.tsx         ← AI-generated Linktree preview + rationale
+    modify-theme.tsx       ← Theme selector grid
+    edit-bio.tsx           ← Bio/name editor with AI regenerate
+    monetization.tsx       ← Tier selection (Free/Starter/Pro/Premium)
+    payment-review.tsx     ← Payment checkout with virtual card
+    admin.tsx              ← Admin dashboard + share bottom sheet
+  context/
+    OnboardingContext.tsx  ← Shared state (username, email, platforms, tier)
+  constants/
+    colors.ts              ← Linktree brand colors
+  assets/images/
+    nova-avatar.png        ← AI-generated Nova Reyes avatar
+    icon.png               ← App icon
+    splash-icon.png        ← Splash screen image
 ```
 
-## TypeScript & Composite Projects
+## Design System
+| Token | Value |
+|-------|-------|
+| Lime green (primary CTA) | `#C5E84F` |
+| Dark green | `#1D3C34` |
+| Purple (AI / paid features) | `#7B3FE4` |
+| Nova's terracotta theme | `#C9614A` |
+| Background | `#FFFFFF` / `#F8F7F5` |
 
-Every package extends `tsconfig.base.json` which sets `composite: true`. The root `tsconfig.json` lists all packages as project references. This means:
+## Screen Flow
+Landing → Username → Email → Social Platforms → AI Loading → AI Preview ↔ Modify Theme / Edit Bio → Monetization → Payment Review → Admin Dashboard (with Share Bottom Sheet)
 
-- **Always typecheck from the root** — run `pnpm run typecheck` (which runs `tsc --build --emitDeclarationOnly`). This builds the full dependency graph so that cross-package imports resolve correctly. Running `tsc` inside a single package will fail if its dependencies haven't been built yet.
-- **`emitDeclarationOnly`** — we only emit `.d.ts` files during typecheck; actual JS bundling is handled by esbuild/tsx/vite...etc, not `tsc`.
-- **Project references** — when package A depends on package B, A's `tsconfig.json` must list B in its `references` array. `tsc --build` uses this to determine build order and skip up-to-date packages.
+## Tier System
+- **Free** ($0): Unlimited links, basic analytics, standard themes
+- **Starter** ($6/mo): Custom color palettes, removes branding
+- **Pro** ($12/mo): Full AI-personalized Linktree, logo, full-screen visuals (AI recommended)
+- **Premium** ($30/mo): 0% fees, concierge setup, white-label
 
-## Root Scripts
+## Nova Reyes — Pre-populated Persona
+- Handle: @novaonthemove
+- Platforms: Instagram, TikTok, YouTube, Spotify, Website (all selected)
+- Theme: Warm terracotta (AI-generated)
+- Links: SE Asia Travel Guide, TikTok, Lightroom Presets, YouTube vlogs, website
+- Tier: Pro (default selected)
 
-- `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
-- `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
-
-## Packages
-
-### `artifacts/api-server` (`@workspace/api-server`)
-
-Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` for request and response validation and `@workspace/db` for persistence.
-
-- Entry: `src/index.ts` — reads `PORT`, starts Express
-- App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
-- Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
-- Depends on: `@workspace/db`, `@workspace/api-zod`
-- `pnpm --filter @workspace/api-server run dev` — run the dev server
-- `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
-- Build bundles an allowlist of deps (express, cors, pg, drizzle-orm, zod, etc.) and externalizes the rest
-
-### `lib/db` (`@workspace/db`)
-
-Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client instance and schema models.
-
-- `src/index.ts` — creates a `Pool` + Drizzle instance, exports schema
-- `src/schema/index.ts` — barrel re-export of all models
-- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas (no models definitions exist right now)
-- `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
-- Exports: `.` (pool, db, schema), `./schema` (schema only)
-
-Production migrations are handled by Replit when publishing. In development, we just use `pnpm --filter @workspace/db run push`, and we fallback to `pnpm --filter @workspace/db run push-force`.
-
-### `lib/api-spec` (`@workspace/api-spec`)
-
-Owns the OpenAPI 3.1 spec (`openapi.yaml`) and the Orval config (`orval.config.ts`). Running codegen produces output into two sibling packages:
-
-1. `lib/api-client-react/src/generated/` — React Query hooks + fetch client
-2. `lib/api-zod/src/generated/` — Zod schemas
-
-Run codegen: `pnpm --filter @workspace/api-spec run codegen`
-
-### `lib/api-zod` (`@workspace/api-zod`)
-
-Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used by `api-server` for response validation.
-
-### `lib/api-client-react` (`@workspace/api-client-react`)
-
-Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
-
-### `scripts` (`@workspace/scripts`)
-
-Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+## Key Packages
+- expo-linear-gradient: gradient backgrounds
+- expo-image: optimized image rendering
+- expo-haptics: tactile feedback
+- react-native-reanimated: animations (AI loading orbits, bottom sheet)
+- react-native-gesture-handler: gesture support
+- @expo/vector-icons: Feather, FontAwesome5, MaterialCommunityIcons

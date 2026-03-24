@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
 import AutoVideo from "@/components/AutoVideo";
+import { assetPath } from "@/constants/assetPath";
 
 const SCREEN_W = Dimensions.get("window").width;
 
@@ -121,8 +122,8 @@ export default function LandingScreen() {
           {/* Hero demo video — below first CTA */}
           <AutoVideo
             source={heroSrc}
-            videoPath="/hero_demo.mp4"
-            posterPath="/homepage-billboard.png"
+            videoPath={assetPath("/hero_demo.mp4")}
+            posterPath={assetPath("/homepage-billboard.png")}
             style={styles.heroVideo}
           />
         </View>
@@ -150,7 +151,7 @@ export default function LandingScreen() {
 
           <AutoVideo
             source={demoSrc}
-            videoPath="/customize_linktree.mp4"
+            videoPath={assetPath("/customize_linktree.mp4")}
             style={styles.demoVideo}
           />
         </View>

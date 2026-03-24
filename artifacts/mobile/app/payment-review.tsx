@@ -145,10 +145,19 @@ const TIER_DATA: Record<string, {
   },
 };
 
+const PLAN_TABS: { id: string; label: string }[] = [
+  { id: "starter", label: "Starter" },
+  { id: "pro",     label: "Pro" },
+  { id: "premium", label: "Premium" },
+];
+
 export default function PaymentReviewScreen() {
   const insets = useSafeAreaInsets();
   const { selectedTier } = useOnboarding();
-  const tier = TIER_DATA[selectedTier] ?? TIER_DATA.pro;
+  const [activeTier, setActiveTier] = useState<string>(
+    TIER_DATA[selectedTier] ? selectedTier : "pro"
+  );
+  const tier = TIER_DATA[activeTier] ?? TIER_DATA.pro;
   const [billing, setBilling] = useState<BillingCycle>("annual");
 
   const isAnnual = billing === "annual";
@@ -174,6 +183,23 @@ export default function PaymentReviewScreen() {
         <Text style={styles.headerSub}>
           Here's everything included in Linktree {tier.name}.
         </Text>
+      </View>
+
+      {/* Plan selector */}
+      <View style={styles.planTabWrap}>
+        <View style={styles.planTabPill}>
+          {PLAN_TABS.map((tab) => (
+            <Pressable
+              key={tab.id}
+              style={[styles.planTabOption, activeTier === tab.id && styles.planTabOptionActive]}
+              onPress={() => setActiveTier(tab.id)}
+            >
+              <Text style={[styles.planTabText, activeTier === tab.id && styles.planTabTextActive]}>
+                {tab.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
       {/* Billing toggle */}
@@ -313,6 +339,38 @@ const styles = StyleSheet.create({
   progressFill: { height: 4, backgroundColor: "#7B3FE4", borderRadius: 2 },
   headerTitle: { fontSize: 24, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold", marginTop: 8 },
   headerSub: { fontSize: 14, color: "#6B7280", fontFamily: "Inter_400Regular", lineHeight: 20 },
+
+  planTabWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 2,
+    alignItems: "center",
+  },
+  planTabPill: {
+    flexDirection: "row",
+    backgroundColor: "#F3F4F6",
+    borderRadius: 50,
+    padding: 4,
+    gap: 2,
+    alignSelf: "stretch",
+  },
+  planTabOption: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 9,
+    borderRadius: 50,
+  },
+  planTabOptionActive: {
+    backgroundColor: "#7B3FE4",
+  },
+  planTabText: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+    color: "#6B7280",
+  },
+  planTabTextActive: {
+    color: "#FFFFFF",
+  },
 
   toggleWrap: {
     paddingHorizontal: 20,

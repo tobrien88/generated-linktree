@@ -294,7 +294,7 @@ export default function PaymentReviewScreen() {
       <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
         <Pressable
           style={({ pressed }) => [styles.startBtn, pressed && { opacity: 0.85 }]}
-          onPress={() => router.push("/admin")}
+          onPress={() => router.push("/payment")}
         >
           <Feather name="zap" size={18} color="#1D3C34" />
           <Text style={styles.startBtnText}>{tier.ctaText}</Text>

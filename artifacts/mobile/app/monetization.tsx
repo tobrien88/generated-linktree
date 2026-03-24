@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { ComponentProps, useState } from "react";
 import {
   ImageBackground,
   Platform,
@@ -17,7 +17,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding, Tier } from "@/context/OnboardingContext";
 
-type Callout = { icon: string; label: string; desc: string };
+type FeatherIconName = ComponentProps<typeof Feather>["name"];
+type Callout = { icon: FeatherIconName; label: string; desc: string };
 
 type TierMeta = {
   id: Tier;
@@ -274,7 +275,7 @@ export default function MonetizationScreen() {
                 activeId === "free" && { backgroundColor: "#F0F0F0" },
               ]}>
                 <Feather
-                  name={c.icon as any}
+                  name={c.icon}
                   size={16}
                   color={
                     activeId === "pro" ? "#7B3FE4" :

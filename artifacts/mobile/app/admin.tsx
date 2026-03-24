@@ -1,4 +1,5 @@
 import { Feather, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import Svg, { Circle as SvgCircle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
@@ -84,6 +85,61 @@ const SHARE_DESTINATIONS = [
   { id: "facebook", label: "Facebook" },
   { id: "x", label: "X" },
 ];
+
+function ProgressRing({
+  size = 68,
+  strokeWidth = 6,
+  progress,
+  color = "#C5E84F",
+  trackColor = "#E5E7EB",
+  bgColor,
+  children,
+}: {
+  size?: number;
+  strokeWidth?: number;
+  progress: number;
+  color?: string;
+  trackColor?: string;
+  bgColor?: string;
+  children?: React.ReactNode;
+}) {
+  const r = (size - strokeWidth) / 2;
+  const cx = size / 2;
+  const cy = size / 2;
+  const circumference = 2 * Math.PI * r;
+  const dashoffset = circumference * (1 - progress);
+  return (
+    <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}>
+      {bgColor && (
+        <View
+          style={{
+            position: "absolute",
+            width: size - strokeWidth,
+            height: size - strokeWidth,
+            borderRadius: (size - strokeWidth) / 2,
+            backgroundColor: bgColor,
+          }}
+        />
+      )}
+      <Svg width={size} height={size} style={{ position: "absolute", top: 0, left: 0 }}>
+        <SvgCircle cx={cx} cy={cy} r={r} stroke={trackColor} strokeWidth={strokeWidth} fill="none" />
+        <SvgCircle
+          cx={cx}
+          cy={cy}
+          r={r}
+          stroke={color}
+          strokeWidth={strokeWidth}
+          fill="none"
+          strokeDasharray={circumference}
+          strokeDashoffset={dashoffset}
+          strokeLinecap="round"
+          transform={`rotate(-90, ${cx}, ${cy})`}
+        />
+      </Svg>
+      {children}
+    </View>
+  );
+}
 
 function ShareDestIcon({ destId }: { destId: string }) {
   switch (destId) {
@@ -336,11 +392,9 @@ export default function AdminScreen() {
 
             {/* Circular progress indicator */}
             <Pressable style={styles.circleProgress} onPress={handleShare}>
-              <View style={styles.circleOuter}>
-                <View style={styles.circleInner}>
-                  <Text style={styles.circleCount}>{completedCount}/{totalCount}</Text>
-                </View>
-              </View>
+              <ProgressRing progress={completedCount / totalCount}>
+                <Text style={styles.circleCount}>{completedCount}/{totalCount}</Text>
+              </ProgressRing>
               <Text style={styles.shareToFinishHint}>Share{"\n"}to finish</Text>
             </Pressable>
           </View>
@@ -550,12 +604,12 @@ export default function AdminScreen() {
         style={[styles.floatingCircle, { bottom: insets.bottom + (Platform.OS === "web" ? 50 : 36) }]}
         onPress={handleShare}
       >
-        <View style={styles.floatingCircleOuter}>
-          <View style={styles.floatingCircleInner}>
+        <ProgressRing progress={completedCount / totalCount} bgColor="#FFFFFF">
+          <View style={{ alignItems: "center" }}>
             <Text style={styles.floatingCircleCount}>{completedCount}/{totalCount}</Text>
             <Text style={styles.floatingCircleLabel}>Share{"\n"}to finish</Text>
           </View>
-        </View>
+        </ProgressRing>
       </Pressable>
 
       <ShareBottomSheet visible={shareOpen} onClose={() => setShareOpen(false)} />

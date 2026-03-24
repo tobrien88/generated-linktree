@@ -1,8 +1,9 @@
-import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
+  Dimensions,
+  Easing,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -16,6 +17,50 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
+
+const SCREEN_W = Dimensions.get("window").width;
+
+const MARQUEE_ITEMS = [
+  "Koy Sun. Lettering artist and illustrator.",
+  "Studio Clay",
+  "Shaep",
+  "Nova Reyes",
+  "TravelWithKoysun",
+  "Studio Clay",
+];
+const MARQUEE_TEXT = MARQUEE_ITEMS.join("  ·  ") + "  ·  ";
+
+function MarqueeStrip() {
+  const translateX = useRef(new Animated.Value(0)).current;
+  const textWidth = MARQUEE_TEXT.length * 8.5;
+
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.timing(translateX, {
+        toValue: -textWidth,
+        duration: textWidth * 22,
+        easing: Easing.linear,
+        useNativeDriver: false,
+      })
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [textWidth, translateX]);
+
+  return (
+    <View style={styles.marqueeStrip}>
+      <Animated.View
+        style={[styles.marqueeInner, { transform: [{ translateX }] }]}
+      >
+        {[0, 1, 2].map((i) => (
+          <Text key={i} style={styles.marqueeText}>
+            {MARQUEE_TEXT}
+          </Text>
+        ))}
+      </Animated.View>
+    </View>
+  );
+}
 
 export default function LandingScreen() {
   const insets = useSafeAreaInsets();
@@ -33,103 +78,125 @@ export default function LandingScreen() {
     >
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[
-          styles.container,
-          { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) },
-        ]}
+        contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* Navigation bar */}
-        <View style={styles.navbar}>
-          <View style={styles.logoRow}>
-            <Text style={styles.logoAsterisk}>*</Text>
-            <Text style={styles.logoText}>Linktree</Text>
+        {/* ── Lime-green hero zone ────────────────────── */}
+        <View
+          style={[
+            styles.heroZone,
+            { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) + 12 },
+          ]}
+        >
+          {/* Floating pill navbar */}
+          <View style={styles.navPill}>
+            <View style={styles.logoRow}>
+              <View style={styles.asteriskBox}>
+                <Text style={styles.asterisk}>*</Text>
+              </View>
+            </View>
+            <View style={styles.navActions}>
+              <Pressable style={styles.loginBtn}>
+                <Text style={styles.loginText}>Log in</Text>
+              </Pressable>
+              <Pressable style={styles.signupBtn} onPress={handleGetStarted}>
+                <Text style={styles.signupText}>Sign up free</Text>
+              </Pressable>
+              <View style={styles.hamburger}>
+                <View style={styles.hamburgerLine} />
+                <View style={styles.hamburgerLine} />
+                <View style={[styles.hamburgerLine, { width: 14 }]} />
+              </View>
+            </View>
           </View>
-          <View style={styles.navActions}>
-            <Pressable style={styles.loginBtn}>
-              <Text style={styles.loginText}>Log in</Text>
-            </Pressable>
-            <Pressable style={styles.signupBtn} onPress={handleGetStarted}>
-              <Text style={styles.signupText}>Sign up free</Text>
+
+          {/* Headline + subtitle */}
+          <View style={styles.heroContent}>
+            <Text style={styles.heroTitle}>
+              {"A link in bio\nbuilt for you."}
+            </Text>
+            <Text style={styles.heroSubtitle}>
+              Join 70M+ people using Linktree for their link in bio. One link to
+              help you share everything you create, curate and sell from your
+              Instagram, TikTok, Twitter, YouTube and other social media
+              profiles.
+            </Text>
+
+            {/* URL input */}
+            <View
+              style={[
+                styles.inputWrapper,
+                inputFocused && styles.inputWrapperFocused,
+              ]}
+            >
+              <Text style={styles.inputPrefix}>linktr.ee/</Text>
+              <TextInput
+                style={styles.input}
+                value={username}
+                onChangeText={setUsername}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                placeholder="yourname"
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            {/* CTA button */}
+            <Pressable
+              style={({ pressed }) => [
+                styles.ctaButton,
+                pressed && styles.ctaButtonPressed,
+              ]}
+              onPress={handleGetStarted}
+            >
+              <Text style={styles.ctaButtonText}>Get started for free</Text>
             </Pressable>
           </View>
+
+          {/* Hero lifestyle image */}
+          <Image
+            source={require("../assets/images/homepage1.png")}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
         </View>
 
-        {/* Hero section */}
-        <LinearGradient
-          colors={["#C5E84F", "#B8DA40"]}
-          style={styles.hero}
-        >
-          <Text style={styles.heroTitle}>
-            A link in bio{"\n"}built for you.
-          </Text>
-          <Text style={styles.heroSubtitle}>
-            Join 70M+ people using Linktree. Now with AI that builds your
-            profile automatically from your social signals.
-          </Text>
+        {/* ── Marquee strip ───────────────────────────── */}
+        <MarqueeStrip />
 
-          {/* URL Input */}
-          <View style={[styles.inputWrapper, inputFocused && styles.inputWrapperFocused]}>
-            <Text style={styles.inputPrefix}>linktr.ee/</Text>
-            <TextInput
-              style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              onFocus={() => setInputFocused(true)}
-              onBlur={() => setInputFocused(false)}
-              placeholder="yourname"
-              placeholderTextColor="#9CA3AF"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
+        {/* ── Blue "Create and customize" section ─────── */}
+        <View style={styles.blueSection}>
+          <Text style={styles.blueSectionTitle}>
+            Automatically create your Linktree in seconds
+          </Text>
+          <Text style={styles.blueSectionBody}>
+            Connect all your content across social media, websites, stores and
+            more in one link in bio. Linktree automatically creates your page to
+            match your brand and get more clicks, customize it from there.
+          </Text>
 
           <Pressable
             style={({ pressed }) => [
-              styles.ctaButton,
+              styles.blueCtaBtn,
               pressed && styles.ctaButtonPressed,
             ]}
             onPress={handleGetStarted}
           >
-            <Text style={styles.ctaButtonText}>Get started for free</Text>
+            <Text style={styles.blueCtaText}>Get started for free</Text>
           </Pressable>
-        </LinearGradient>
 
-        {/* AI Feature callout */}
-        <View style={styles.aiCallout}>
-          <View style={styles.aiCalloutInner}>
-            <View style={styles.aiIcon}>
-              <Feather name="zap" size={18} color="#7B3FE4" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.aiCalloutTitle}>AI-powered profile generation</Text>
-              <Text style={styles.aiCalloutBody}>
-                Connect your social profiles and let our AI build your personalized Linktree — bio, theme, links and all.
-              </Text>
-            </View>
-          </View>
+          {/* Product mockup image */}
+          <Image
+            source={require("../assets/images/homepage2.png")}
+            style={styles.mockupImage}
+            resizeMode="cover"
+          />
         </View>
 
-        {/* Feature grid */}
-        <View style={styles.featuresGrid}>
-          {[
-            { icon: "link-2" as const, label: "All your links" },
-            { icon: "trending-up" as const, label: "Analytics" },
-            { icon: "dollar-sign" as const, label: "Sell products" },
-            { icon: "zap" as const, label: "AI-generated" },
-          ].map((f) => (
-            <View key={f.label} style={styles.featureItem}>
-              <View style={styles.featureIconBg}>
-                <Feather name={f.icon} size={20} color="#1D3C34" />
-              </View>
-              <Text style={styles.featureLabel}>{f.label}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Bottom padding */}
         <View style={{ height: insets.bottom + (Platform.OS === "web" ? 34 : 20) }} />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -137,81 +204,94 @@ export default function LandingScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { flex: 1, backgroundColor: "#FFFFFF" },
+  scroll: { flex: 1, backgroundColor: "#C5E84F" },
   container: { flexGrow: 1, backgroundColor: "#FFFFFF" },
-  navbar: {
+
+  heroZone: {
+    backgroundColor: "#C5E84F",
+    paddingHorizontal: 16,
+    paddingBottom: 0,
+  },
+
+  navPill: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
     backgroundColor: "#FFFFFF",
-  },
-  logoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  logoAsterisk: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#1D3C34",
-    fontFamily: "Inter_700Bold",
-  },
-  logoText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1D3C34",
-    fontFamily: "Inter_700Bold",
-  },
-  navActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  loginBtn: {
-    paddingHorizontal: 16,
+    borderRadius: 50,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
+    marginBottom: 32,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  logoRow: { flexDirection: "row", alignItems: "center" },
+  asteriskBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#C5E84F",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  asterisk: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#1D3C34",
+    fontFamily: "DM_Sans_700Bold",
+    lineHeight: 28,
+  },
+  navActions: { flexDirection: "row", alignItems: "center", gap: 8 },
+  loginBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    backgroundColor: "#F3F4F6",
   },
   loginText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: "#1A1A1A",
-    fontFamily: "Inter_600SemiBold",
+    fontFamily: "DM_Sans_500Medium",
   },
   signupBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
     backgroundColor: "#1D3C34",
   },
   signupText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: "#FFFFFF",
-    fontFamily: "Inter_600SemiBold",
+    fontFamily: "DM_Sans_500Medium",
   },
-  hero: {
-    paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 36,
+  hamburger: { gap: 4, paddingLeft: 4 },
+  hamburgerLine: {
+    width: 18,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: "#1A1A1A",
   },
+
+  heroContent: { paddingHorizontal: 4 },
   heroTitle: {
-    fontSize: 40,
-    fontWeight: "800",
+    fontSize: 44,
+    fontWeight: "900",
     color: "#1D3C34",
-    fontFamily: "Inter_700Bold",
-    lineHeight: 46,
-    marginBottom: 16,
+    fontFamily: "DM_Sans_700Bold",
+    lineHeight: 50,
+    marginBottom: 18,
+    letterSpacing: -0.5,
   },
   heroSubtitle: {
-    fontSize: 16,
-    color: "#2A5244",
-    fontFamily: "Inter_400Regular",
-    lineHeight: 24,
+    fontSize: 15,
+    color: "#2A4A3A",
+    fontFamily: "DM_Sans_400Regular",
+    lineHeight: 23,
     marginBottom: 28,
   },
   inputWrapper: {
@@ -221,98 +301,102 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    marginBottom: 14,
+    marginBottom: 12,
     borderWidth: 2,
     borderColor: "transparent",
   },
-  inputWrapperFocused: {
-    borderColor: "#1D3C34",
-  },
+  inputWrapperFocused: { borderColor: "#1D3C34" },
   inputPrefix: {
     fontSize: 16,
     color: "#9CA3AF",
-    fontFamily: "Inter_400Regular",
+    fontFamily: "DM_Sans_400Regular",
   },
   input: {
     flex: 1,
     fontSize: 16,
     color: "#1A1A1A",
-    fontFamily: "Inter_500Medium",
+    fontFamily: "DM_Sans_500Medium",
     padding: 0,
   },
   ctaButton: {
     backgroundColor: "#1D3C34",
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: 50,
+    paddingVertical: 17,
     alignItems: "center",
+    marginBottom: 28,
   },
-  ctaButtonPressed: {
-    opacity: 0.85,
-  },
+  ctaButtonPressed: { opacity: 0.85 },
   ctaButtonText: {
     fontSize: 16,
     fontWeight: "700",
     color: "#FFFFFF",
-    fontFamily: "Inter_700Bold",
+    fontFamily: "DM_Sans_700Bold",
   },
-  aiCallout: {
-    margin: 20,
-    borderRadius: 16,
-    backgroundColor: "#F0E8FF",
+
+  heroImage: {
+    width: SCREEN_W - 32,
+    height: 260,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignSelf: "center",
+  },
+
+  marqueeStrip: {
+    backgroundColor: "#E8F5DC",
+    paddingVertical: 11,
     overflow: "hidden",
   },
-  aiCalloutInner: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-    padding: 16,
-  },
-  aiIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  aiCalloutTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#1A1A1A",
-    fontFamily: "Inter_700Bold",
-    marginBottom: 4,
-  },
-  aiCalloutBody: {
+  marqueeInner: { flexDirection: "row" },
+  marqueeText: {
     fontSize: 13,
-    color: "#6B7280",
-    fontFamily: "Inter_400Regular",
-    lineHeight: 19,
+    color: "#2A4A3A",
+    fontFamily: "DM_Sans_400Regular",
+    letterSpacing: 0.2,
   },
-  featuresGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    paddingHorizontal: 20,
-    gap: 12,
+
+  blueSection: {
+    backgroundColor: "#3D4FDB",
+    paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 0,
   },
-  featureItem: {
-    width: "46%",
-    backgroundColor: "#F8F7F5",
-    borderRadius: 14,
-    padding: 16,
-    gap: 10,
+  blueSectionTitle: {
+    fontSize: 34,
+    fontWeight: "900",
+    color: "#C5E84F",
+    fontFamily: "DM_Sans_700Bold",
+    lineHeight: 40,
+    marginBottom: 20,
+    textAlign: "center",
+    letterSpacing: -0.3,
   },
-  featureIconBg: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  blueSectionBody: {
+    fontSize: 15,
+    color: "#FFFFFF",
+    fontFamily: "DM_Sans_400Regular",
+    lineHeight: 23,
+    marginBottom: 32,
+    textAlign: "left",
+  },
+  blueCtaBtn: {
     backgroundColor: "#C5E84F",
+    borderRadius: 50,
+    paddingVertical: 17,
     alignItems: "center",
-    justifyContent: "center",
+    marginBottom: 40,
   },
-  featureLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    fontFamily: "Inter_600SemiBold",
+  blueCtaText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1D3C34",
+    fontFamily: "DM_Sans_700Bold",
+  },
+
+  mockupImage: {
+    width: SCREEN_W - 48,
+    height: 280,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignSelf: "center",
   },
 });

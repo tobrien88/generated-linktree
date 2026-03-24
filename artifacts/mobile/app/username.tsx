@@ -48,14 +48,14 @@ export default function UsernameScreen() {
           <View style={[styles.inputRow, focused && styles.inputRowFocused]}>
             <Text style={styles.prefix}>linktr.ee/</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, Platform.OS === "web" && ({ outlineWidth: 0 } as object)]}
               value={username}
               onChangeText={setUsername}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               autoCapitalize="none"
               autoCorrect={false}
-              autoFocus
+              underlineColorAndroid="transparent"
             />
           </View>
 

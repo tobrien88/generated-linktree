@@ -100,7 +100,7 @@ export default function PaymentScreen() {
               {/* Card number */}
               <View style={styles.fieldRow}>
                 <TextInput
-                  style={styles.input}
+                  style={styles.fieldInput}
                   placeholder="Card number"
                   placeholderTextColor="#9CA3AF"
                   value={cardNumber}
@@ -109,10 +109,9 @@ export default function PaymentScreen() {
                   maxLength={19}
                 />
                 <View style={styles.cardBrands}>
-                  <FontAwesome5 name="cc-visa" size={20} color="#1A1AFF" />
-                  <FontAwesome5 name="cc-mastercard" size={20} color="#EB001B" />
-                  <FontAwesome5 name="cc-amex" size={20} color="#2E77BC" />
-                  <FontAwesome5 name="cc-discover" size={20} color="#FF6600" />
+                  <FontAwesome5 name="cc-visa" size={14} color="#1A1AFF" />
+                  <FontAwesome5 name="cc-mastercard" size={14} color="#EB001B" />
+                  <FontAwesome5 name="cc-amex" size={14} color="#2E77BC" />
                 </View>
               </View>
               {/* Expiry + CVV */}
@@ -165,10 +164,7 @@ export default function PaymentScreen() {
         {/* Google Pay */}
         <Pressable style={[styles.payOption, styles.payOptionFlat]} onPress={() => setMethod("googlepay")}>
           <Radio selected={method === "googlepay"} />
-          <View style={styles.gpayLogo}>
-            <Text style={styles.gpayG}>G</Text>
-            <Text style={styles.gpayPay}>Pay</Text>
-          </View>
+          <FontAwesome5 name="google" size={16} color="#4285F4" style={{ marginLeft: 10 }} />
           <Text style={styles.payOptionLabel}>Google Pay</Text>
         </Pressable>
 
@@ -319,7 +315,14 @@ const styles = StyleSheet.create({
     color: "#1A1A1A",
     flex: 1,
   },
-  cardBrands: { flexDirection: "row", gap: 4, alignItems: "center", marginLeft: 8 },
+  fieldInput: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    color: "#1A1A1A",
+  },
+  cardBrands: { flexDirection: "row", gap: 6, alignItems: "center", marginLeft: 8 },
   twoCol: { flexDirection: "row", gap: 8 },
   inputHalf: { flex: 1 },
   cvvWrap: {
@@ -337,10 +340,6 @@ const styles = StyleSheet.create({
   },
   countryLabel: { fontSize: 11, color: "#9CA3AF", fontFamily: "Inter_400Regular" },
   countryValue: { fontSize: 14, color: "#1A1A1A", fontFamily: "Inter_400Regular", marginTop: 2 },
-
-  gpayLogo: { flexDirection: "row", alignItems: "baseline", marginLeft: 10, marginRight: 4 },
-  gpayG: { fontSize: 15, fontFamily: "Inter_700Bold", color: "#1A1A1A" },
-  gpayPay: { fontSize: 15, fontFamily: "Inter_400Regular", color: "#1A1A1A" },
 
   paypalHelpBtn: {
     marginLeft: "auto" as unknown as number,

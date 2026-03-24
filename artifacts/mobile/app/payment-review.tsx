@@ -19,37 +19,50 @@ type SectionConfig = { heading: string; items: string[] };
 const TIER_DATA: Record<string, {
   name: string;
   price: string;
-  billing: string;
-  sections: SectionConfig[];
+  trialLabel: string | null;
+  ctaText: string;
+  billingNote: string;
   gradient: [string, string];
+  sections: SectionConfig[];
 }> = {
   starter: {
     name: "Starter",
     price: "$6.00",
-    billing: "per month after trial",
+    trialLabel: null,
+    ctaText: "Get started with Starter",
+    billingNote: "Billed $6.00/month. Cancel anytime.",
     gradient: ["#F59E0B", "#D97706"],
     sections: [
       {
         heading: "Design & Branding",
-        items: ["Custom color palettes", "Remove Linktree branding"],
+        items: [
+          "Custom color palettes",
+          "Remove Linktree branding",
+          "Your Nova Earth terracotta palette included",
+        ],
       },
       {
-        heading: "Support",
-        items: ["Priority email support", "Scheduling (2 links)"],
+        heading: "Support & Tools",
+        items: [
+          "Priority email support",
+          "2 scheduled link slots",
+        ],
       },
     ],
   },
   pro: {
     name: "Pro",
     price: "$12.00",
-    billing: "per month after trial",
+    trialLabel: "7-day free trial",
+    ctaText: "Try Pro free for 7 days",
+    billingNote: "Free for 7 days, then $12.00/month. Cancel anytime.",
     gradient: ["#7B3FE4", "#5B22C4"],
     sections: [
       {
         heading: "AI-Personalization",
         items: [
           "Full AI-personalized Linktree",
-          "AI bio generation from your social signals",
+          "Bio generation from your social signals",
           "Smart link ordering by engagement",
           "Personalized theme matching",
         ],
@@ -67,7 +80,7 @@ const TIER_DATA: Record<string, {
         items: [
           "Advanced analytics dashboard",
           "Audience demographic insights",
-          "Social scheduling — unlimited links",
+          "Unlimited scheduling",
           "Sell products & collect payments",
         ],
       },
@@ -76,7 +89,9 @@ const TIER_DATA: Record<string, {
   premium: {
     name: "Premium",
     price: "$30.00",
-    billing: "per month after trial",
+    trialLabel: null,
+    ctaText: "Get started with Premium",
+    billingNote: "Billed $30.00/month. Cancel anytime.",
     gradient: ["#B8860B", "#8B6914"],
     sections: [
       {
@@ -97,7 +112,11 @@ const TIER_DATA: Record<string, {
       },
       {
         heading: "Enterprise",
-        items: ["Team member seats", "Brand kit management", "API access"],
+        items: [
+          "Team member seats",
+          "Brand kit management",
+          "API access",
+        ],
       },
     ],
   },
@@ -121,7 +140,7 @@ export default function PaymentReviewScreen() {
         </View>
         <Text style={styles.headerTitle}>Review your plan</Text>
         <Text style={styles.headerSub}>
-          Here's everything included in your Linktree {tier.name} plan.
+          Here's everything included in Linktree {tier.name}.
         </Text>
       </View>
 
@@ -129,7 +148,7 @@ export default function PaymentReviewScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Plan summary card */}
+        {/* Plan card */}
         <LinearGradient
           colors={tier.gradient}
           style={styles.planCard}
@@ -143,14 +162,19 @@ export default function PaymentReviewScreen() {
             </View>
             <View style={styles.planPriceBlock}>
               <Text style={styles.planPrice}>{tier.price}</Text>
-              <Text style={styles.planBilling}>{tier.billing}</Text>
+              <Text style={styles.planBilling}>/month</Text>
             </View>
           </View>
-          <View style={styles.planDivider} />
-          <View style={styles.trialRow}>
-            <Feather name="gift" size={16} color="#C5E84F" />
-            <Text style={styles.trialText}>30-day free trial — cancel anytime</Text>
-          </View>
+
+          {tier.trialLabel && (
+            <>
+              <View style={styles.planDivider} />
+              <View style={styles.trialRow}>
+                <Feather name="gift" size={16} color="#C5E84F" />
+                <Text style={styles.trialText}>{tier.trialLabel} — cancel anytime</Text>
+              </View>
+            </>
+          )}
         </LinearGradient>
 
         {/* Trust badges */}
@@ -163,10 +187,17 @@ export default function PaymentReviewScreen() {
             <Feather name="refresh-cw" size={16} color="#22C55E" />
             <Text style={styles.trustText}>Cancel anytime</Text>
           </View>
-          <View style={styles.trustItem}>
-            <Feather name="clock" size={16} color="#22C55E" />
-            <Text style={styles.trustText}>Free for 30 days</Text>
-          </View>
+          {tier.trialLabel ? (
+            <View style={styles.trustItem}>
+              <Feather name="clock" size={16} color="#22C55E" />
+              <Text style={styles.trustText}>{tier.trialLabel}</Text>
+            </View>
+          ) : (
+            <View style={styles.trustItem}>
+              <Feather name="zap" size={16} color="#22C55E" />
+              <Text style={styles.trustText}>Instant access</Text>
+            </View>
+          )}
         </View>
 
         {/* What's included */}
@@ -190,10 +221,7 @@ export default function PaymentReviewScreen() {
         {/* Billing notice */}
         <View style={styles.billingNote}>
           <Feather name="info" size={14} color="#9CA3AF" />
-          <Text style={styles.billingNoteText}>
-            Your card won't be charged until your 30-day free trial ends on{" "}
-            <Text style={styles.billingNoteBold}>April 23, 2026</Text>. You can cancel before then at no charge.
-          </Text>
+          <Text style={styles.billingNoteText}>{tier.billingNote}</Text>
         </View>
 
         <View style={{ height: 20 }} />
@@ -206,11 +234,9 @@ export default function PaymentReviewScreen() {
           onPress={() => router.push("/admin")}
         >
           <Feather name="zap" size={18} color="#1D3C34" />
-          <Text style={styles.startBtnText}>Start my free trial</Text>
+          <Text style={styles.startBtnText}>{tier.ctaText}</Text>
         </Pressable>
-        <Text style={styles.footerNote}>
-          Billed {tier.price} monthly after trial. Cancel anytime.
-        </Text>
+        <Text style={styles.footerNote}>{tier.billingNote}</Text>
       </View>
     </View>
   );
@@ -259,7 +285,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   featureSection: {
-    marginBottom: 16,
+    marginBottom: 14,
     backgroundColor: "#F8F7FF",
     borderRadius: 16,
     padding: 16,
@@ -304,7 +330,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     lineHeight: 18,
   },
-  billingNoteBold: { fontFamily: "Inter_700Bold", color: "#6B7280" },
   footer: {
     paddingHorizontal: 20,
     paddingTop: 12,

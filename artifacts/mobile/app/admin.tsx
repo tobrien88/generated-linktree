@@ -196,7 +196,8 @@ function ShareBottomSheet({ visible, onClose }: { visible: boolean; onClose: () 
             </Pressable>
           </View>
 
-          {/* Labeled platform icons */}
+          {/* My platforms section */}
+          <Text style={styles.myPlatformsLabel}>My platforms</Text>
           <PlatformRow />
 
           {/* Divider */}
@@ -849,6 +850,16 @@ const styles = StyleSheet.create({
   },
   platformLabel: { fontSize: 10, color: "#6B7280", fontFamily: "Inter_500Medium" },
   sheetDivider: { height: 1, backgroundColor: "#F3F4F6", marginHorizontal: 20, marginBottom: 14 },
+  myPlatformsLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#9CA3AF",
+    fontFamily: "Inter_600SemiBold",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    paddingHorizontal: 20,
+    marginBottom: 8,
+  },
   shareToLabel: {
     fontSize: 12,
     fontWeight: "600",

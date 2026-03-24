@@ -6,7 +6,6 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
   withRepeat,
   withSequence,
   withTiming,
@@ -20,7 +19,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const MESSAGES = [
   "Connecting to your profiles...",
@@ -49,7 +48,7 @@ function PlatformOrbitIcon({ index, total, platformId, color }: {
   color: string;
 }) {
   const angle = useSharedValue((index / total) * Math.PI * 2);
-  const radius = 80;
+  const radius = 82;
 
   useEffect(() => {
     angle.value = withRepeat(
@@ -62,28 +61,31 @@ function PlatformOrbitIcon({ index, total, platformId, color }: {
     );
   }, []);
 
-  const animStyle = useAnimatedStyle(() => {
-    const x = Math.cos(angle.value) * radius;
-    const y = Math.sin(angle.value) * radius;
-    return {
-      transform: [{ translateX: x }, { translateY: y }],
-    };
-  });
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: Math.cos(angle.value) * radius },
+      { translateY: Math.sin(angle.value) * radius },
+    ],
+  }));
 
-  const iconProps = { size: 18, color };
-  const icon = platformId === "instagram"
-    ? <MaterialCommunityIcons name="instagram" {...iconProps} />
-    : platformId === "tiktok"
-    ? <MaterialCommunityIcons name="music-note" {...iconProps} />
-    : platformId === "youtube"
-    ? <FontAwesome5 name="youtube" {...iconProps} />
-    : platformId === "spotify"
-    ? <FontAwesome5 name="spotify" {...iconProps} />
-    : <Feather name="globe" {...iconProps} />;
+  const renderIcon = () => {
+    switch (platformId) {
+      case "instagram":
+        return <MaterialCommunityIcons name="instagram" size={18} color={color} />;
+      case "tiktok":
+        return <MaterialCommunityIcons name="music-note" size={18} color={color} />;
+      case "youtube":
+        return <FontAwesome5 name="youtube" size={16} color={color} />;
+      case "spotify":
+        return <FontAwesome5 name="spotify" size={16} color={color} />;
+      default:
+        return <Feather name="globe" size={16} color={color} />;
+    }
+  };
 
   return (
     <Animated.View style={[styles.orbitIcon, animStyle]}>
-      {icon}
+      {renderIcon()}
     </Animated.View>
   );
 }
@@ -91,16 +93,32 @@ function PlatformOrbitIcon({ index, total, platformId, color }: {
 export default function AILoadingScreen() {
   const insets = useSafeAreaInsets();
   const [messageIndex, setMessageIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [displayedText, setDisplayedText] = useState("");
   const progressAnim = useSharedValue(0);
   const pulseAnim = useSharedValue(1);
-  const glowAnim = useSharedValue(0);
+  const glowAnim = useSharedValue(0.4);
+  const charIndexRef = useRef(0);
+  const msgIndexRef = useRef(0);
+  const typeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTyping = (msg: string) => {
+    if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
+    charIndexRef.current = 0;
+    setDisplayedText("");
+    typeIntervalRef.current = setInterval(() => {
+      charIndexRef.current++;
+      setDisplayedText(msg.slice(0, charIndexRef.current));
+      if (charIndexRef.current >= msg.length) {
+        if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
+      }
+    }, 38);
+  };
 
   useEffect(() => {
     // Progress animation
     progressAnim.value = withTiming(1, { duration: 4200, easing: Easing.out(Easing.cubic) });
 
-    // Pulse animation for center orb
+    // Pulse
     pulseAnim.value = withRepeat(
       withSequence(
         withTiming(1.12, { duration: 900, easing: Easing.inOut(Easing.ease) }),
@@ -110,31 +128,35 @@ export default function AILoadingScreen() {
       false
     );
 
-    // Glow animation
+    // Glow
     glowAnim.value = withRepeat(
       withSequence(
         withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.4, { duration: 1200, easing: Easing.inOut(Easing.ease) })
+        withTiming(0.3, { duration: 1200, easing: Easing.inOut(Easing.ease) })
       ),
       -1,
       false
     );
 
-    // Cycle messages
-    let idx = 0;
+    // Start first message typewriter
+    startTyping(MESSAGES[0]);
+
+    // Cycle messages with typewriter
     const msgInterval = setInterval(() => {
-      idx = Math.min(idx + 1, MESSAGES.length - 1);
-      setMessageIndex(idx);
+      msgIndexRef.current = Math.min(msgIndexRef.current + 1, MESSAGES.length - 1);
+      setMessageIndex(msgIndexRef.current);
+      startTyping(MESSAGES[msgIndexRef.current]);
     }, 500);
 
-    // Auto-navigate after 4.5 seconds
+    // Auto-navigate
     const navTimeout = setTimeout(() => {
       router.replace("/ai-preview");
-    }, 4500);
+    }, 4600);
 
     return () => {
       clearInterval(msgInterval);
       clearTimeout(navTimeout);
+      if (typeIntervalRef.current) clearInterval(typeIntervalRef.current);
     };
   }, []);
 
@@ -155,7 +177,7 @@ export default function AILoadingScreen() {
       colors={["#0A0A14", "#0F0A22", "#120825"]}
       style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}
     >
-      {/* Particle dots background */}
+      {/* Particle dots */}
       {Array.from({ length: 20 }).map((_, i) => (
         <View
           key={i}
@@ -164,7 +186,7 @@ export default function AILoadingScreen() {
             {
               left: `${(i * 37 + 10) % 90}%` as any,
               top: `${(i * 53 + 15) % 85}%` as any,
-              opacity: 0.15 + (i % 5) * 0.08,
+              opacity: 0.12 + (i % 5) * 0.06,
               width: 2 + (i % 3),
               height: 2 + (i % 3),
             },
@@ -172,17 +194,11 @@ export default function AILoadingScreen() {
         />
       ))}
 
-      {/* Neural connection lines hint */}
-      <View style={styles.scanLine} />
-      <View style={[styles.scanLine, { top: "45%", opacity: 0.04 }]} />
-
       <View style={styles.centerSection}>
         {/* Orbit system */}
         <View style={styles.orbitContainer}>
-          {/* Glow behind orb */}
           <Animated.View style={[styles.orbGlow, glowStyle]} />
 
-          {/* Orbiting platforms */}
           {PLATFORMS.map((p, i) => (
             <PlatformOrbitIcon
               key={p.id}
@@ -193,7 +209,6 @@ export default function AILoadingScreen() {
             />
           ))}
 
-          {/* Center orb */}
           <Animated.View style={[styles.centerOrb, orbStyle]}>
             <LinearGradient
               colors={["#C5E84F", "#8FCC20"]}
@@ -210,8 +225,13 @@ export default function AILoadingScreen() {
           <Text style={styles.aiLabelText}>AI ANALYSIS IN PROGRESS</Text>
         </View>
 
-        {/* Message */}
-        <Text style={styles.message}>{MESSAGES[messageIndex]}</Text>
+        {/* Typewriter message */}
+        <View style={styles.messageContainer}>
+          <Text style={styles.message}>
+            {displayedText}
+            <Text style={styles.cursor}>|</Text>
+          </Text>
+        </View>
 
         {/* Progress bar */}
         <View style={styles.progressTrack}>
@@ -219,7 +239,7 @@ export default function AILoadingScreen() {
         </View>
       </View>
 
-      {/* Footer info */}
+      {/* Footer */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 24) }]}>
         <Text style={styles.footerText}>
           Analyzing {PLATFORMS.length} connected profiles to build your personalized Linktree
@@ -240,20 +260,11 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     backgroundColor: "#7B3FE4",
   },
-  scanLine: {
-    position: "absolute",
-    top: "30%",
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: "#C5E84F",
-    opacity: 0.06,
-  },
   centerSection: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 28,
+    gap: 24,
     paddingHorizontal: 40,
   },
   orbitContainer: {
@@ -265,9 +276,9 @@ const styles = StyleSheet.create({
   },
   orbGlow: {
     position: "absolute",
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     backgroundColor: "#C5E84F",
     opacity: 0.2,
   },
@@ -276,11 +287,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(255,255,255,0.07)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderColor: "rgba(255,255,255,0.10)",
   },
   centerOrb: {
     width: 72,
@@ -316,13 +327,22 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     letterSpacing: 2,
   },
+  messageContainer: {
+    minHeight: 56,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+  },
   message: {
     fontSize: 18,
     color: "#FFFFFF",
     fontFamily: "Inter_500Medium",
     textAlign: "center",
     lineHeight: 26,
-    minHeight: 52,
+  },
+  cursor: {
+    color: "#C5E84F",
+    fontSize: 18,
+    fontFamily: "Inter_400Regular",
   },
   progressTrack: {
     width: "100%",
@@ -342,7 +362,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(255,255,255,0.35)",
     fontFamily: "Inter_400Regular",
     textAlign: "center",
     lineHeight: 18,

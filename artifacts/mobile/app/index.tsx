@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   heroZone: {
     backgroundColor: "#C5E84F",
     paddingHorizontal: 16,
-    paddingBottom: 0,
+    paddingBottom: 40,
   },
 
   navPill: {
@@ -281,10 +281,9 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans_700Bold",
   },
   heroVideo: {
-    width: SCREEN_W - 32,
-    height: 280,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    width: SCREEN_W - 80,
+    height: 300,
+    borderRadius: 20,
     alignSelf: "center",
     overflow: "hidden",
   },

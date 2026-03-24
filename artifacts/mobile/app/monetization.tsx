@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -32,6 +32,7 @@ type TierConfig = {
   billing: string;
   tagline: string;
   personalizedCallout?: string;
+  proTikTokCallout?: boolean;
   sections: FeatureSection[];
   cta: string;
   trialNote?: string;
@@ -84,9 +85,11 @@ const TIERS: TierConfig[] = [
           "Remove Linktree branding",
           "Social media icons & links",
           "Collect email & phone numbers",
-          "2 scheduled link time slots",
-          "Priority email support",
+          "Redirect links (leap links)",
+          "Social link scheduling",
           "Unique QR code with custom styling",
+          "Reduced 5% seller fee on Shops",
+          "Priority email support",
         ],
       },
     ],
@@ -102,6 +105,7 @@ const TIERS: TierConfig[] = [
     billing: "/mo",
     tagline: "Everything you need to grow.",
     personalizedCallout: "AI recommends Pro for @novaonthemove — your 284K TikTok audience converts 3x better with AI-personalized profiles",
+    proTikTokCallout: true,
     sections: [
       {
         heading: "Everything in Starter, plus",
@@ -113,9 +117,10 @@ const TIERS: TierConfig[] = [
           "Custom logo upload",
           "Full-screen video background",
           "Advanced analytics & UTM tracking",
-          "Unlimited scheduling",
-          "Sell products & collect payments",
-          "Leap links & auto-redirects",
+          "Automated Instagram DM replies",
+          "Link shortener",
+          "Email marketing integrations",
+          "Reduced 1% seller fee on Shops",
         ],
       },
       {
@@ -142,14 +147,16 @@ const TIERS: TierConfig[] = [
     price: "$30",
     billing: "/mo",
     tagline: "For power creators scaling their brand.",
-    personalizedCallout: "Built for high-revenue creators like Nova — 0% fees means you keep every dollar from every sale",
+    personalizedCallout: "You earned $12K selling presets last month — 0% seller fees means Nova keeps every dollar",
     sections: [
       {
         heading: "Everything in Pro, plus",
         items: [
-          "0% transaction fees on all sales",
+          "0% transaction fees — keep all your earnings",
           "Custom domain (yourname.com)",
           "White-label — no Linktree branding anywhere",
+          "Unlimited automated Instagram replies",
+          "Unlimited social posts scheduling",
           "Dedicated concierge setup session",
           "Priority support queue",
           "Early access to new features",
@@ -211,11 +218,38 @@ function TierCard({ tier, isSelected, onSelect }: {
         </View>
       </View>
 
+      {/* Pro TikTok visual callout */}
+      {tier.proTikTokCallout && (
+        <View style={styles.tiktokCallout}>
+          <View style={styles.tiktokCalloutLeft}>
+            <View style={styles.tiktokIconBox}>
+              <MaterialCommunityIcons name="music-note" size={20} color="#FFFFFF" />
+            </View>
+            <View style={{ gap: 2 }}>
+              <Text style={styles.tiktokCalloutName}>TikTok · @novaonthemove</Text>
+              <Text style={styles.tiktokCalloutStats}>284K followers · 38% engagement</Text>
+            </View>
+          </View>
+          <View style={styles.tiktokCalloutBadge}>
+            <Feather name="trending-up" size={11} color="#C5E84F" />
+            <Text style={styles.tiktokCalloutBadgeText}>Top</Text>
+          </View>
+        </View>
+      )}
+
       {/* Personalized callout */}
-      {tier.personalizedCallout && (
+      {tier.personalizedCallout && !tier.proTikTokCallout && (
         <View style={[styles.calloutBox, isPro && styles.calloutBoxPro]}>
           <Feather name="zap" size={12} color={isPro ? "#C5E84F" : tier.accentColor} />
           <Text style={[styles.calloutText, isPro && styles.calloutTextPro]}>
+            {tier.personalizedCallout}
+          </Text>
+        </View>
+      )}
+      {tier.proTikTokCallout && tier.personalizedCallout && (
+        <View style={[styles.calloutBox, styles.calloutBoxPro]}>
+          <Feather name="zap" size={12} color="#C5E84F" />
+          <Text style={[styles.calloutText, styles.calloutTextPro]}>
             {tier.personalizedCallout}
           </Text>
         </View>
@@ -484,6 +518,41 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
   calloutTextPro: { color: "rgba(255,255,255,0.9)" },
+  tiktokCallout: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255,255,255,0.10)",
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 2,
+  },
+  tiktokCalloutLeft: { flexDirection: "row", alignItems: "center", gap: 8, flex: 1 },
+  tiktokIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tiktokCalloutName: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    fontFamily: "Inter_600SemiBold",
+  },
+  tiktokCalloutStats: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular" },
+  tiktokCalloutBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "rgba(197,232,79,0.18)",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  tiktokCalloutBadgeText: { fontSize: 11, color: "#C5E84F", fontFamily: "Inter_700Bold" },
   featureSection: { gap: 7 },
   sectionHeading: {
     fontSize: 11,

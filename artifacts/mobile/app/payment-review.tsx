@@ -44,10 +44,12 @@ const TIER_DATA: Record<string, {
         ],
       },
       {
-        heading: "Tools & Support",
+        heading: "Tools & Growth",
         items: [
+          "Redirect links (leap links)",
+          "Social link scheduling",
           "Collect email & phone numbers",
-          "2 scheduled link time slots",
+          "Reduced 5% seller fee on Shops",
           "Priority email support",
         ],
       },
@@ -79,14 +81,16 @@ const TIER_DATA: Record<string, {
           "Link thumbnails & spotlight links",
           "Advanced Linktree Shops",
           "Sell digital products & courses",
+          "Reduced 1% seller fee on Shops",
         ],
       },
       {
-        heading: "Growth & Analytics",
+        heading: "Growth & Integrations",
         items: [
           "Advanced analytics & UTM tracking",
-          "Unlimited scheduling",
-          "Leap links & auto-redirects",
+          "Automated Instagram DM replies",
+          "Link shortener",
+          "Email marketing integrations",
           "Priority 24/7 support",
         ],
       },
@@ -103,14 +107,16 @@ const TIER_DATA: Record<string, {
       {
         heading: "Creator Commerce",
         items: [
-          "0% transaction fees on all sales",
+          "0% transaction fees — keep all your earnings",
           "Custom domain (yourname.com)",
           "White-label — no Linktree branding anywhere",
         ],
       },
       {
-        heading: "Concierge & Support",
+        heading: "Unlimited Creator Tools",
         items: [
+          "Unlimited automated Instagram replies",
+          "Unlimited social posts scheduling",
           "Dedicated concierge setup session",
           "Priority support queue",
           "Early access to new features",

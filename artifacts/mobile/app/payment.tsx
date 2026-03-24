@@ -37,10 +37,10 @@ export default function PaymentScreen() {
 
   const [method, setMethod] = useState<PaymentMethod>("card");
 
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [zip, setZip] = useState("");
+  const [cardNumber, setCardNumber] = useState("4111 1111 1111 1111");
+  const [expiry, setExpiry] = useState("10/27");
+  const [cvv, setCvv] = useState("1234");
+  const [zip, setZip] = useState("10001");
 
   const annualTotal = tierInfo.annual;
   const tax = 9;
@@ -232,7 +232,7 @@ export default function PaymentScreen() {
           style={({ pressed }) => [styles.ctaBtn, pressed && { opacity: 0.9 }]}
           onPress={() => router.push("/admin")}
         >
-          <Feather name="zap" size={18} color="#9CA3AF" />
+          <Feather name="zap" size={18} color="#1D3C34" />
           <Text style={styles.ctaBtnText}>
             {tierInfo.hasTrial ? "Start your free trial" : `Start ${tierInfo.name}`}
           </Text>
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   ctaBtn: {
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "#C5E84F",
     borderRadius: 50,
     paddingVertical: 16,
     flexDirection: "row",
@@ -432,6 +432,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  ctaBtnText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#9CA3AF" },
+  ctaBtnText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#1D3C34" },
   footerNote: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular", textAlign: "center" },
 });

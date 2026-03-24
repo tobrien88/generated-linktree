@@ -1,8 +1,7 @@
-import { Feather, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useRef } from "react";
+import React from "react";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -20,58 +19,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
-
-type PlatformIconProps = {
-  id: string;
-  size?: number;
-  color?: string;
-};
-
-function PlatformIcon({ id, size = 22, color = "#FFFFFF" }: PlatformIconProps) {
-  switch (id) {
-    case "instagram":
-      return <MaterialCommunityIcons name="instagram" size={size} color={color} />;
-    case "tiktok":
-      return <MaterialCommunityIcons name="music-note" size={size} color={color} />;
-    case "youtube":
-      return <FontAwesome5 name="youtube" size={size} color={color} />;
-    case "spotify":
-      return <FontAwesome5 name="spotify" size={size} color={color} />;
-    case "website":
-      return <Feather name="globe" size={size} color={color} />;
-    case "twitter":
-      return <FontAwesome5 name="twitter" size={size} color={color} />;
-    case "facebook":
-      return <FontAwesome5 name="facebook" size={size} color={color} />;
-    case "threads":
-      return <MaterialCommunityIcons name="at" size={size} color={color} />;
-    case "pinterest":
-      return <FontAwesome5 name="pinterest" size={size} color={color} />;
-    case "snapchat":
-      return <FontAwesome5 name="snapchat" size={size} color={color} />;
-    case "linkedin":
-      return <FontAwesome5 name="linkedin" size={size} color={color} />;
-    case "soundcloud":
-      return <FontAwesome5 name="soundcloud" size={size} color={color} />;
-    default:
-      return <Feather name="link" size={size} color={color} />;
-  }
-}
-
-const PLATFORM_COLORS: Record<string, string> = {
-  instagram: "#E1306C",
-  tiktok: "#000000",
-  youtube: "#FF0000",
-  spotify: "#1DB954",
-  website: "#7B3FE4",
-  twitter: "#1DA1F2",
-  facebook: "#1877F2",
-  threads: "#000000",
-  pinterest: "#E60023",
-  snapchat: "#FFFC00",
-  linkedin: "#0077B5",
-  soundcloud: "#FF5500",
-};
+import { PlatformIcon, PLATFORM_COLORS } from "@/components/PlatformIcon";
 
 function PlatformTileComponent({
   platform,
@@ -82,21 +30,19 @@ function PlatformTileComponent({
   onToggle: () => void;
   onHandleChange: (handle: string) => void;
 }) {
-  const height = useSharedValue(platform.selected ? 1 : 0);
-  const opacity = useSharedValue(platform.selected ? 1 : 0);
-  const bgColor = PLATFORM_COLORS[platform.id] || "#1D3C34";
+  const expandAnim = useSharedValue(platform.selected ? 1 : 0);
+  const bgColor = PLATFORM_COLORS[platform.id] ?? "#1D3C34";
 
   const handlePress = () => {
     const newSelected = !platform.selected;
-    height.value = withSpring(newSelected ? 1 : 0, { damping: 16 });
-    opacity.value = withSpring(newSelected ? 1 : 0, { damping: 16 });
+    expandAnim.value = withSpring(newSelected ? 1 : 0, { damping: 16 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onToggle();
   };
 
   const inputStyle = useAnimatedStyle(() => ({
-    maxHeight: height.value * 52,
-    opacity: opacity.value,
+    maxHeight: expandAnim.value * 52,
+    opacity: expandAnim.value,
     overflow: "hidden",
   }));
 
@@ -107,7 +53,7 @@ function PlatformTileComponent({
         style={[styles.tile, platform.selected && styles.tileSelected]}
       >
         <View style={[styles.tileIcon, { backgroundColor: bgColor }]}>
-          <PlatformIcon id={platform.id} size={20} color="#FFFFFF" />
+          <PlatformIcon platformId={platform.id} size={20} color="#FFFFFF" />
         </View>
         <Text style={[styles.tileName, platform.selected && styles.tileNameSelected]}>
           {platform.name}
@@ -176,7 +122,6 @@ export default function SocialPlatformsScreen() {
           Tap to add your handles. Our AI will analyze your content to build your personalized Linktree.
         </Text>
 
-        {/* Platform grid */}
         <View style={styles.grid}>
           {platforms.map((p) => (
             <PlatformTileComponent
@@ -194,7 +139,9 @@ export default function SocialPlatformsScreen() {
       {/* Footer */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
         {selectedCount > 0 && (
-          <Text style={styles.selectedCount}>{selectedCount} platform{selectedCount !== 1 ? "s" : ""} selected</Text>
+          <Text style={styles.selectedCount}>
+            {selectedCount} platform{selectedCount !== 1 ? "s" : ""} selected
+          </Text>
         )}
         <Pressable
           style={({ pressed }) => [
@@ -291,9 +238,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  handleInputWrapper: {
-    marginTop: 4,
-  },
+  handleInputWrapper: { marginTop: 4 },
   handleInput: {
     backgroundColor: "#F0F9F4",
     borderRadius: 10,

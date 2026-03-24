@@ -21,37 +21,24 @@ const NOVA_LINKS = [
     id: "guide",
     title: "Free SE Asia Travel Guide",
     subtitle: "Download now — 80 pages of tips",
-    icon: "book-open" as const,
     featured: false,
   },
   {
     id: "tiktok",
     title: "Follow me on TikTok",
     subtitle: "@novaonthemove · 284K followers",
-    icon: "music-note",
     featured: true,
-    isMaterial: true,
   },
   {
     id: "presets",
     title: "My Lightroom Preset Pack",
     subtitle: "The filters I use in every reel",
-    icon: "sliders" as const,
     featured: false,
   },
   {
     id: "youtube",
     title: "Watch my travel vlogs",
     subtitle: "YouTube · @NovaOnTheMove",
-    icon: "youtube",
-    featured: false,
-    isFontAwesome: true,
-  },
-  {
-    id: "website",
-    title: "novaonthemove.com",
-    subtitle: "My full blog & travel resources",
-    icon: "globe" as const,
     featured: false,
   },
 ];
@@ -87,33 +74,6 @@ const RATIONALE = [
   },
 ];
 
-function LinkCard({ link }: { link: (typeof NOVA_LINKS)[0] }) {
-  const renderIcon = () => {
-    if ((link as any).isMaterial)
-      return <MaterialCommunityIcons name={link.icon as any} size={18} color="#C9614A" />;
-    if ((link as any).isFontAwesome)
-      return <FontAwesome5 name={link.icon as any} size={16} color="#C9614A" />;
-    return <Feather name={link.icon as any} size={16} color="#C9614A" />;
-  };
-
-  return (
-    <View style={[styles.linkCard, link.featured && styles.linkCardFeatured]}>
-      <View style={styles.linkIconBg}>{renderIcon()}</View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.linkTitle}>{link.title}</Text>
-        {link.featured && (
-          <Text style={styles.linkSubtitle}>{link.subtitle}</Text>
-        )}
-      </View>
-      {link.featured && (
-        <View style={styles.featuredBadge}>
-          <Text style={styles.featuredBadgeText}>TOP</Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
 export default function AIPreviewScreen() {
   const insets = useSafeAreaInsets();
 
@@ -121,16 +81,14 @@ export default function AIPreviewScreen() {
     <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerTextRow}>
-          <View style={styles.sparkleRow}>
-            <Feather name="zap" size={14} color="#7B3FE4" />
-            <Text style={styles.sparkleLabel}>AI-Generated</Text>
-          </View>
-          <Text style={styles.headerTitle}>Your Linktree is ready</Text>
-          <Text style={styles.headerSub}>
-            Built from your social signals. Tap below to customize.
-          </Text>
+        <View style={styles.sparkleRow}>
+          <Feather name="zap" size={14} color="#7B3FE4" />
+          <Text style={styles.sparkleLabel}>AI-Generated</Text>
         </View>
+        <Text style={styles.headerTitle}>Your Linktree is ready</Text>
+        <Text style={styles.headerSub}>
+          Built from your social signals. Tap below to customize.
+        </Text>
       </View>
 
       <ScrollView
@@ -146,10 +104,7 @@ export default function AIPreviewScreen() {
             start={{ x: 0.2, y: 0 }}
             end={{ x: 0.8, y: 1 }}
           >
-            {/* Linktree star logo */}
             <Text style={styles.mockupLogo}>*</Text>
-
-            {/* Avatar */}
             <View style={styles.avatarContainer}>
               <Image
                 source={require("../assets/images/nova-avatar.png")}
@@ -157,20 +112,15 @@ export default function AIPreviewScreen() {
                 contentFit="cover"
               />
             </View>
-
             <Text style={styles.mockupHandle}>@novaonthemove</Text>
             <Text style={styles.mockupBio} numberOfLines={3}>{NOVA_BIO}</Text>
-
-            {/* Social icons row */}
             <View style={styles.socialRow}>
               <MaterialCommunityIcons name="instagram" size={20} color="rgba(255,255,255,0.9)" />
               <MaterialCommunityIcons name="music-note" size={20} color="rgba(255,255,255,0.9)" />
               <FontAwesome5 name="youtube" size={18} color="rgba(255,255,255,0.9)" />
               <FontAwesome5 name="spotify" size={18} color="rgba(255,255,255,0.9)" />
             </View>
-
-            {/* Mini links */}
-            {NOVA_LINKS.slice(0, 4).map((link) => (
+            {NOVA_LINKS.map((link) => (
               <View key={link.id} style={[
                 styles.miniLink,
                 link.featured && styles.miniLinkFeatured,
@@ -208,7 +158,7 @@ export default function AIPreviewScreen() {
           <View style={styles.rationaleList}>
             {RATIONALE.map((r) => (
               <View key={r.key} style={styles.rationaleItem}>
-                <View style={[styles.rationaleIcon, { backgroundColor: r.color + "20" }]}>
+                <View style={[styles.rationaleIcon, { backgroundColor: r.color + "22" }]}>
                   <Feather name={r.icon} size={15} color={r.color} />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -238,8 +188,7 @@ export default function AIPreviewScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
-  header: { paddingHorizontal: 20, paddingBottom: 0, paddingTop: 12 },
-  headerTextRow: { gap: 4 },
+  header: { paddingHorizontal: 20, paddingBottom: 0, paddingTop: 12, gap: 4 },
   sparkleRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -334,9 +283,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontFamily: "Inter_500Medium",
   },
-  miniLinkTextFeatured: {
-    fontFamily: "Inter_700Bold",
-  },
+  miniLinkTextFeatured: { fontFamily: "Inter_700Bold" },
   editRow: {
     flexDirection: "row",
     gap: 10,
@@ -359,9 +306,7 @@ const styles = StyleSheet.create({
     color: "#7B3FE4",
     fontFamily: "Inter_600SemiBold",
   },
-  rationaleSection: {
-    marginTop: 24,
-  },
+  rationaleSection: { marginTop: 24 },
   rationaleTitle: {
     fontSize: 18,
     fontWeight: "700",

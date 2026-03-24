@@ -2,8 +2,11 @@ import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   Platform,
   Pressable,
   ScrollView,
@@ -15,17 +18,25 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding, Tier } from "@/context/OnboardingContext";
 
+const SCREEN_W = Dimensions.get("window").width;
+const CARD_W = SCREEN_W - 48; // 24px side padding each
+const CARD_GAP = 12;
+
+type FeatureSection = { heading: string; items: string[] };
+
 type TierConfig = {
   id: Tier;
   name: string;
   price: string;
   billing: string;
-  description: string;
-  features: string[];
+  tagline: string;
+  aiCallout?: string;
+  sections: FeatureSection[];
   cta: string;
   recommended?: boolean;
-  badgeColor?: string;
   gradient?: [string, string];
+  accentColor: string;
+  headingColor: string;
 };
 
 const TIERS: TierConfig[] = [
@@ -34,123 +45,180 @@ const TIERS: TierConfig[] = [
     name: "Free",
     price: "$0",
     billing: "forever",
-    description: "The basics to get your links live.",
-    features: [
-      "Unlimited links",
-      "Basic analytics",
-      "Standard themes",
-      "Linktree branding",
+    tagline: "The basics to get your links live.",
+    sections: [
+      {
+        heading: "Core Features",
+        items: ["Unlimited links", "Basic click analytics", "Standard themes", "Linktree branding"],
+      },
     ],
-    cta: "Continue free",
+    cta: "Continue with Free",
+    accentColor: "#6B7280",
+    headingColor: "#374151",
   },
   {
     id: "starter",
     name: "Starter",
     price: "$6",
     billing: "/mo",
-    description: "Customize your look.",
-    features: [
-      "Everything in Free",
-      "Custom color palettes",
-      "Remove Linktree branding",
-      "Priority support",
+    tagline: "Customize your look and feel.",
+    sections: [
+      {
+        heading: "Everything in Free, plus",
+        items: [
+          "Custom color palettes",
+          "Remove Linktree branding",
+          "Priority email support",
+          "Scheduling (2 links)",
+        ],
+      },
     ],
     cta: "Start Starter",
-    badgeColor: "#F59E0B",
+    accentColor: "#F59E0B",
+    headingColor: "#92400E",
   },
   {
     id: "pro",
     name: "Pro",
     price: "$12",
     billing: "/mo",
-    description: "Everything you need to grow.",
-    features: [
-      "Everything in Starter",
-      "Full AI-personalized Linktree",
-      "Custom logo upload",
-      "Full-screen video background",
-      "Analytics dashboard",
-      "Social media scheduling",
+    tagline: "Everything you need to grow.",
+    aiCallout: "AI recommends this for @novaonthemove based on your 284K TikTok audience",
+    sections: [
+      {
+        heading: "Everything in Starter, plus",
+        items: [
+          "Full AI-personalized Linktree",
+          "Custom logo upload",
+          "Full-screen video background",
+          "Advanced analytics dashboard",
+          "Social media scheduling",
+          "Sell products & collect payments",
+        ],
+      },
+      {
+        heading: "AI Features",
+        items: [
+          "Auto bio generation from social signals",
+          "Personalized theme matching",
+          "Smart link ordering",
+          "Audience insights",
+        ],
+      },
     ],
-    cta: "Start Pro",
+    cta: "Start Pro free for 30 days",
     recommended: true,
-    badgeColor: "#7B3FE4",
     gradient: ["#7B3FE4", "#5B22C4"],
+    accentColor: "#7B3FE4",
+    headingColor: "#C5E84F",
   },
   {
     id: "premium",
     name: "Premium",
     price: "$30",
     billing: "/mo",
-    description: "For power creators and brands.",
-    features: [
-      "Everything in Pro",
-      "0% transaction fees",
-      "White-label experience",
-      "Dedicated concierge setup",
-      "Priority queue support",
+    tagline: "For power creators and brands.",
+    sections: [
+      {
+        heading: "Everything in Pro, plus",
+        items: [
+          "0% transaction fees on sales",
+          "White-label experience",
+          "Custom domain support",
+          "Dedicated concierge setup",
+          "Priority queue support",
+          "Early access to new features",
+        ],
+      },
+      {
+        heading: "Enterprise Features",
+        items: [
+          "Team member seats",
+          "Brand kit management",
+          "API access",
+        ],
+      },
     ],
     cta: "Start Premium",
-    badgeColor: "#B8860B",
-    gradient: ["#B8860B", "#8B6914"],
+    accentColor: "#B8860B",
+    headingColor: "#92400E",
   },
 ];
 
-function TierCard({
-  tier,
-  isSelected,
-  onSelect,
-}: {
+function TierCard({ tier, isSelected, onSelect }: {
   tier: TierConfig;
   isSelected: boolean;
   onSelect: () => void;
 }) {
   const isPro = tier.id === "pro";
-  const isPremium = tier.id === "premium";
-  const isPaid = tier.id !== "free";
+
+  const content = (
+    <View style={styles.cardInner}>
+      {/* Top badge area */}
+      {tier.recommended && (
+        <View style={styles.recommendedBadge}>
+          <Feather name="zap" size={11} color="#C5E84F" />
+          <Text style={[styles.recommendedText, { color: "#C5E84F" }]}>AI-RECOMMENDED</Text>
+        </View>
+      )}
+      {tier.id === "premium" && (
+        <View style={[styles.recommendedBadge, { backgroundColor: "rgba(180,134,11,0.15)", borderColor: "#B8860B22" }]}>
+          <Feather name="award" size={11} color="#B8860B" />
+          <Text style={[styles.recommendedText, { color: "#B8860B" }]}>PREMIUM</Text>
+        </View>
+      )}
+
+      {/* Price row */}
+      <View style={styles.priceRow}>
+        <View>
+          <Text style={[styles.tierName, isPro && styles.tierNameLight]}>{tier.name}</Text>
+          <Text style={[styles.tierTagline, isPro && styles.tierTaglineLight]}>{tier.tagline}</Text>
+        </View>
+        <View style={styles.priceBlock}>
+          <Text style={[styles.price, isPro && { color: "#C5E84F" }]}>{tier.price}</Text>
+          <Text style={[styles.priceBilling, isPro && styles.tierTaglineLight]}>{tier.billing}</Text>
+        </View>
+      </View>
+
+      {/* AI callout */}
+      {tier.aiCallout && (
+        <View style={styles.aiCalloutBox}>
+          <Feather name="zap" size={12} color="#C5E84F" />
+          <Text style={styles.aiCalloutText}>{tier.aiCallout}</Text>
+        </View>
+      )}
+
+      {/* Feature sections */}
+      {tier.sections.map((section) => (
+        <View key={section.heading} style={styles.featureSection}>
+          <Text style={[styles.sectionHeading, { color: isPro ? tier.headingColor : tier.headingColor }]}>
+            {section.heading}
+          </Text>
+          {section.items.map((item) => (
+            <View key={item} style={styles.featureRow}>
+              <Feather
+                name="check"
+                size={14}
+                color={isPro ? "#C5E84F" : tier.accentColor}
+              />
+              <Text style={[styles.featureText, isPro && styles.featureTextLight]}>{item}</Text>
+            </View>
+          ))}
+        </View>
+      ))}
+    </View>
+  );
 
   if (isPro) {
     return (
-      <Pressable onPress={onSelect}>
+      <Pressable onPress={onSelect} style={[styles.card, isSelected && styles.cardSelectedPro]}>
         <LinearGradient
           colors={tier.gradient!}
-          style={[styles.tierCard, styles.proCard, isSelected && styles.tierCardSelected]}
+          style={styles.proGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <View style={styles.tierCardHeader}>
-            <View>
-              <View style={styles.proRecommendedRow}>
-                <Feather name="zap" size={12} color="#C5E84F" />
-                <Text style={styles.recommendedLabel}>AI-RECOMMENDED</Text>
-              </View>
-              <Text style={[styles.tierName, { color: "#FFFFFF" }]}>{tier.name}</Text>
-            </View>
-            <View style={styles.priceBlock}>
-              <Text style={[styles.tierPrice, { color: "#C5E84F" }]}>{tier.price}</Text>
-              <Text style={[styles.tierBilling, { color: "rgba(255,255,255,0.7)" }]}>{tier.billing}</Text>
-            </View>
-          </View>
-
-          <Text style={[styles.tierDescription, { color: "rgba(255,255,255,0.8)" }]}>
-            {tier.description}
-          </Text>
-
-          <View style={styles.featureList}>
-            {tier.features.map((f) => (
-              <View key={f} style={styles.featureRow}>
-                <Feather name="check" size={14} color="#C5E84F" />
-                <Text style={[styles.featureText, { color: "rgba(255,255,255,0.9)" }]}>{f}</Text>
-              </View>
-            ))}
-          </View>
-
-          {isSelected && (
-            <View style={styles.proSelectedBadge}>
-              <Feather name="check-circle" size={16} color="#C5E84F" />
-              <Text style={styles.proSelectedText}>Selected</Text>
-            </View>
-          )}
+          {content}
         </LinearGradient>
       </Pressable>
     );
@@ -158,55 +226,15 @@ function TierCard({
 
   return (
     <Pressable
-      style={[
-        styles.tierCard,
-        isSelected && styles.tierCardSelected,
-        isPremium && styles.premiumCard,
-      ]}
       onPress={onSelect}
+      style={[
+        styles.card,
+        styles.cardDefault,
+        isSelected && styles.cardSelected,
+        tier.id === "premium" && styles.cardPremium,
+      ]}
     >
-      {tier.recommended && (
-        <View style={[styles.recommendedBadge, { backgroundColor: tier.badgeColor }]}>
-          <Text style={styles.recommendedBadgeText}>RECOMMENDED</Text>
-        </View>
-      )}
-
-      {isPremium && (
-        <View style={[styles.premiumBadge]}>
-          <Feather name="award" size={10} color="#B8860B" />
-          <Text style={styles.premiumBadgeText}>PREMIUM</Text>
-        </View>
-      )}
-
-      <View style={styles.tierCardHeader}>
-        <View>
-          <Text style={styles.tierName}>{tier.name}</Text>
-        </View>
-        <View style={styles.priceBlock}>
-          <Text style={[styles.tierPrice, isPremium && { color: "#B8860B" }]}>{tier.price}</Text>
-          <Text style={styles.tierBilling}>{tier.billing}</Text>
-        </View>
-      </View>
-
-      <Text style={styles.tierDescription}>{tier.description}</Text>
-
-      <View style={styles.featureList}>
-        {tier.features.slice(0, 4).map((f) => (
-          <View key={f} style={styles.featureRow}>
-            <Feather name="check" size={14} color={isPaid ? (tier.badgeColor || "#22C55E") : "#6B7280"} />
-            <Text style={styles.featureText}>{f}</Text>
-          </View>
-        ))}
-        {tier.features.length > 4 && (
-          <Text style={styles.moreFeatures}>+{tier.features.length - 4} more features</Text>
-        )}
-      </View>
-
-      {isSelected && (
-        <View style={styles.selectedIndicator}>
-          <Feather name="check-circle" size={14} color={tier.badgeColor || "#22C55E"} />
-        </View>
-      )}
+      {content}
     </Pressable>
   );
 }
@@ -214,11 +242,33 @@ function TierCard({
 export default function MonetizationScreen() {
   const insets = useSafeAreaInsets();
   const { selectedTier, setSelectedTier } = useOnboarding();
+  const scrollRef = useRef<ScrollView>(null);
 
-  const handleSelect = (tier: Tier) => {
-    setSelectedTier(tier);
+  // Find initial tier index
+  const initialIndex = TIERS.findIndex((t) => t.id === selectedTier);
+  const [activeIndex, setActiveIndex] = useState(initialIndex >= 0 ? initialIndex : 2);
+
+  const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const x = e.nativeEvent.contentOffset.x;
+    const idx = Math.round(x / (CARD_W + CARD_GAP));
+    if (idx >= 0 && idx < TIERS.length) {
+      const newTier = TIERS[idx];
+      if (newTier.id !== selectedTier) {
+        setSelectedTier(newTier.id);
+        setActiveIndex(idx);
+        Haptics.selectionAsync();
+      }
+    }
+  };
+
+  const scrollToIndex = (idx: number) => {
+    scrollRef.current?.scrollTo({ x: idx * (CARD_W + CARD_GAP), animated: true });
+    setSelectedTier(TIERS[idx].id);
+    setActiveIndex(idx);
     Haptics.selectionAsync();
   };
+
+  const selectedConfig = TIERS[activeIndex];
 
   const handleContinue = () => {
     if (selectedTier === "free") {
@@ -227,8 +277,6 @@ export default function MonetizationScreen() {
       router.push("/payment-review");
     }
   };
-
-  const selectedConfig = TIERS.find((t) => t.id === selectedTier)!;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
@@ -240,43 +288,70 @@ export default function MonetizationScreen() {
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: "80%" }]} />
         </View>
-      </View>
-
-      <View style={styles.headerText}>
-        <View style={styles.sparkleRow}>
-          <Feather name="zap" size={14} color="#7B3FE4" />
-          <Text style={styles.sparkleLabel}>PERSONALIZED FOR YOU</Text>
+        <View style={styles.headerTextRow}>
+          <View style={styles.sparkleRow}>
+            <Feather name="zap" size={14} color="#7B3FE4" />
+            <Text style={styles.sparkleLabel}>PERSONALIZED FOR YOU</Text>
+          </View>
+          <Text style={styles.title}>Choose your plan</Text>
+          <Text style={styles.subtitle}>
+            Based on your audience size and goals, we recommend{" "}
+            <Text style={{ fontFamily: "Inter_700Bold", color: "#7B3FE4" }}>Pro</Text>.
+          </Text>
         </View>
-        <Text style={styles.title}>Choose your plan</Text>
-        <Text style={styles.subtitle}>
-          Based on your audience size and goals, we recommend <Text style={{ fontFamily: "Inter_700Bold", color: "#7B3FE4" }}>Pro</Text>.
-        </Text>
       </View>
 
+      {/* Carousel */}
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        ref={scrollRef}
+        horizontal
+        pagingEnabled={false}
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={CARD_W + CARD_GAP}
+        decelerationRate="fast"
+        contentContainerStyle={styles.carouselContent}
+        onMomentumScrollEnd={handleScroll}
+        contentOffset={{ x: activeIndex * (CARD_W + CARD_GAP), y: 0 }}
+        style={styles.carousel}
       >
-        {TIERS.map((tier) => (
-          <TierCard
-            key={tier.id}
-            tier={tier}
-            isSelected={selectedTier === tier.id}
-            onSelect={() => handleSelect(tier.id)}
-          />
+        {TIERS.map((tier, idx) => (
+          <View key={tier.id} style={{ width: CARD_W, marginRight: idx < TIERS.length - 1 ? CARD_GAP : 0 }}>
+            <TierCard
+              tier={tier}
+              isSelected={selectedTier === tier.id}
+              onSelect={() => scrollToIndex(idx)}
+            />
+          </View>
         ))}
-        <View style={{ height: 20 }} />
       </ScrollView>
 
+      {/* Dot indicators */}
+      <View style={styles.dots}>
+        {TIERS.map((tier, idx) => (
+          <Pressable
+            key={tier.id}
+            onPress={() => scrollToIndex(idx)}
+            style={[styles.dot, activeIndex === idx && styles.dotActive]}
+          />
+        ))}
+      </View>
+
+      {/* Footer */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
         <Pressable
-          style={({ pressed }) => [styles.continueBtn, pressed && { opacity: 0.85 }]}
+          style={({ pressed }) => [
+            styles.continueBtn,
+            selectedConfig?.id === "pro" && styles.continueBtnPro,
+            pressed && { opacity: 0.85 },
+          ]}
           onPress={handleContinue}
         >
-          <Text style={styles.continueBtnText}>{selectedConfig.cta}</Text>
+          <Text style={[styles.continueBtnText, selectedConfig?.id === "pro" && styles.continueBtnTextPro]}>
+            {selectedConfig?.cta ?? "Continue"}
+          </Text>
         </Pressable>
         <Text style={styles.trialNote}>
-          {selectedTier !== "free" ? "Try free for 30 days. Cancel anytime." : "You can upgrade anytime."}
+          {selectedTier !== "free" ? "Try free for 30 days. Cancel anytime." : "You can upgrade anytime from your dashboard."}
         </Text>
       </View>
     </View>
@@ -285,116 +360,144 @@ export default function MonetizationScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
-  header: { paddingHorizontal: 20, gap: 12, paddingBottom: 0 },
-  backBtn: { flexDirection: "row", alignItems: "center", gap: 2, alignSelf: "flex-start" },
+  header: { paddingHorizontal: 24, gap: 10, paddingBottom: 8 },
+  backBtn: { alignSelf: "flex-start" },
   progressBar: { height: 4, backgroundColor: "#E5E7EB", borderRadius: 2 },
   progressFill: { height: 4, backgroundColor: "#7B3FE4", borderRadius: 2 },
-  headerText: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 8 },
-  sparkleRow: { flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 4 },
+  headerTextRow: { gap: 4 },
+  sparkleRow: { flexDirection: "row", alignItems: "center", gap: 5 },
   sparkleLabel: { fontSize: 11, color: "#7B3FE4", fontFamily: "Inter_700Bold", letterSpacing: 1 },
-  title: { fontSize: 26, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold", marginBottom: 6 },
+  title: { fontSize: 26, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold" },
   subtitle: { fontSize: 14, color: "#6B7280", fontFamily: "Inter_400Regular", lineHeight: 20 },
-  scrollContent: { paddingHorizontal: 20, paddingTop: 12, gap: 12 },
-  tierCard: {
-    borderRadius: 18,
-    padding: 18,
+  carousel: { flexGrow: 0 },
+  carouselContent: { paddingHorizontal: 24 },
+  card: {
+    borderRadius: 22,
+    overflow: "hidden",
+    flex: 1,
+  },
+  cardDefault: {
     borderWidth: 2,
     borderColor: "#E5E7EB",
     backgroundColor: "#FAFAFA",
-    position: "relative",
-    overflow: "hidden",
   },
-  tierCardSelected: {
+  cardSelected: {
     borderColor: "#7B3FE4",
-    backgroundColor: "#F8F7FF",
   },
-  proCard: {
-    borderColor: "transparent",
-    borderWidth: 0,
+  cardSelectedPro: {
+    shadowColor: "#7B3FE4",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 10,
   },
-  premiumCard: {
+  cardPremium: {
     borderColor: "#D4A017",
   },
+  proGradient: { flex: 1 },
+  cardInner: { padding: 22, gap: 14 },
   recommendedBadge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderBottomLeftRadius: 12,
-    borderTopRightRadius: 16,
-  },
-  recommendedBadgeText: {
-    fontSize: 9,
-    fontFamily: "Inter_700Bold",
-    color: "#FFFFFF",
-    letterSpacing: 0.5,
-  },
-  premiumBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    alignSelf: "flex-start",
-    borderWidth: 1,
-    borderColor: "#D4A017",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginBottom: 8,
-  },
-  premiumBadgeText: {
-    fontSize: 9,
-    fontFamily: "Inter_700Bold",
-    color: "#B8860B",
-    letterSpacing: 0.5,
-  },
-  proRecommendedRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    marginBottom: 2,
-  },
-  recommendedLabel: {
-    fontSize: 10,
-    fontFamily: "Inter_700Bold",
-    color: "#C5E84F",
-    letterSpacing: 1,
-  },
-  tierCardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 6,
-  },
-  tierName: { fontSize: 20, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold" },
-  priceBlock: { alignItems: "flex-end" },
-  tierPrice: { fontSize: 22, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold" },
-  tierBilling: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular" },
-  tierDescription: { fontSize: 13, color: "#6B7280", fontFamily: "Inter_400Regular", marginBottom: 12 },
-  featureList: { gap: 6 },
-  featureRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  featureText: { fontSize: 13, color: "#374151", fontFamily: "Inter_400Regular", flex: 1 },
-  moreFeatures: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular", paddingLeft: 22 },
-  selectedIndicator: { position: "absolute", top: 14, right: 14 },
-  proSelectedBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    marginTop: 12,
     backgroundColor: "rgba(197,232,79,0.15)",
     borderRadius: 8,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 5,
     alignSelf: "flex-start",
+    borderWidth: 1,
+    borderColor: "rgba(197,232,79,0.25)",
   },
-  proSelectedText: { fontSize: 13, color: "#C5E84F", fontFamily: "Inter_600SemiBold" },
-  footer: { paddingHorizontal: 20, paddingTop: 12, gap: 10 },
-  continueBtn: {
+  recommendedText: {
+    fontSize: 10,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: 0.8,
+  },
+  priceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  tierName: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#1A1A1A",
+    fontFamily: "Inter_700Bold",
+  },
+  tierNameLight: { color: "#FFFFFF" },
+  tierTagline: { fontSize: 13, color: "#6B7280", fontFamily: "Inter_400Regular", marginTop: 2 },
+  tierTaglineLight: { color: "rgba(255,255,255,0.7)" },
+  priceBlock: { alignItems: "flex-end" },
+  price: { fontSize: 28, fontWeight: "800", color: "#1A1A1A", fontFamily: "Inter_700Bold" },
+  priceBilling: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular" },
+  aiCalloutBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 7,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 10,
+    padding: 10,
+  },
+  aiCalloutText: {
+    flex: 1,
+    fontSize: 12,
+    color: "rgba(255,255,255,0.9)",
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
+  },
+  featureSection: { gap: 7 },
+  sectionHeading: {
+    fontSize: 12,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+    marginBottom: 2,
+  },
+  featureRow: { flexDirection: "row", alignItems: "flex-start", gap: 9 },
+  featureText: {
+    fontSize: 14,
+    color: "#374151",
+    fontFamily: "Inter_400Regular",
+    flex: 1,
+    lineHeight: 20,
+  },
+  featureTextLight: { color: "rgba(255,255,255,0.9)" },
+  dots: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#E5E7EB",
+  },
+  dotActive: {
+    width: 18,
     backgroundColor: "#7B3FE4",
+  },
+  footer: { paddingHorizontal: 24, paddingTop: 8, gap: 10 },
+  continueBtn: {
+    backgroundColor: "#1D3C34",
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: "center",
   },
-  continueBtnText: { fontSize: 16, fontWeight: "700", color: "#FFFFFF", fontFamily: "Inter_700Bold" },
-  trialNote: { fontSize: 13, color: "#9CA3AF", fontFamily: "Inter_400Regular", textAlign: "center" },
+  continueBtnPro: { backgroundColor: "#7B3FE4" },
+  continueBtnText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    fontFamily: "Inter_700Bold",
+  },
+  continueBtnTextPro: { color: "#FFFFFF" },
+  trialNote: {
+    fontSize: 13,
+    color: "#9CA3AF",
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+  },
 });

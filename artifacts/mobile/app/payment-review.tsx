@@ -1,45 +1,112 @@
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
   Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
 
-const TIER_DETAILS = {
-  free: { name: "Free", price: "$0", billing: "forever" },
-  starter: { name: "Starter", price: "$6.00", billing: "/month" },
-  pro: { name: "Pro", price: "$12.00", billing: "/month" },
-  premium: { name: "Premium", price: "$30.00", billing: "/month" },
+type SectionConfig = { heading: string; items: string[] };
+
+const TIER_DATA: Record<string, {
+  name: string;
+  price: string;
+  billing: string;
+  sections: SectionConfig[];
+  gradient: [string, string];
+}> = {
+  starter: {
+    name: "Starter",
+    price: "$6.00",
+    billing: "per month after trial",
+    gradient: ["#F59E0B", "#D97706"],
+    sections: [
+      {
+        heading: "Design & Branding",
+        items: ["Custom color palettes", "Remove Linktree branding"],
+      },
+      {
+        heading: "Support",
+        items: ["Priority email support", "Scheduling (2 links)"],
+      },
+    ],
+  },
+  pro: {
+    name: "Pro",
+    price: "$12.00",
+    billing: "per month after trial",
+    gradient: ["#7B3FE4", "#5B22C4"],
+    sections: [
+      {
+        heading: "AI-Personalization",
+        items: [
+          "Full AI-personalized Linktree",
+          "AI bio generation from your social signals",
+          "Smart link ordering by engagement",
+          "Personalized theme matching",
+        ],
+      },
+      {
+        heading: "Branding & Visuals",
+        items: [
+          "Custom logo upload",
+          "Full-screen video background",
+          "Unlimited themes",
+        ],
+      },
+      {
+        heading: "Growth & Analytics",
+        items: [
+          "Advanced analytics dashboard",
+          "Audience demographic insights",
+          "Social scheduling — unlimited links",
+          "Sell products & collect payments",
+        ],
+      },
+    ],
+  },
+  premium: {
+    name: "Premium",
+    price: "$30.00",
+    billing: "per month after trial",
+    gradient: ["#B8860B", "#8B6914"],
+    sections: [
+      {
+        heading: "Creator Commerce",
+        items: [
+          "0% transaction fees on all sales",
+          "White-label experience",
+          "Custom domain support",
+        ],
+      },
+      {
+        heading: "Concierge & Support",
+        items: [
+          "Dedicated concierge setup session",
+          "Priority queue support",
+          "Early access to new features",
+        ],
+      },
+      {
+        heading: "Enterprise",
+        items: ["Team member seats", "Brand kit management", "API access"],
+      },
+    ],
+  },
 };
 
 export default function PaymentReviewScreen() {
   const insets = useSafeAreaInsets();
   const { selectedTier } = useOnboarding();
-  const tierInfo = TIER_DETAILS[selectedTier];
-
-  const [cardNumber, setCardNumber] = useState("•••• •••• •••• 4242");
-  const [cardName, setCardName] = useState("Nova Reyes");
-  const [expiry, setExpiry] = useState("08/27");
-  const [cvv, setCvv] = useState("•••");
-
-  const formatCardNumber = (val: string) => {
-    const digits = val.replace(/\D/g, "").slice(0, 16);
-    return digits.replace(/(.{4})/g, "$1 ").trim();
-  };
-
-  const handleSubmit = () => {
-    router.push("/admin");
-  };
+  const tier = TIER_DATA[selectedTier] ?? TIER_DATA.pro;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
@@ -52,157 +119,81 @@ export default function PaymentReviewScreen() {
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: "90%" }]} />
         </View>
-        <Text style={styles.headerTitle}>Payment details</Text>
+        <Text style={styles.headerTitle}>Review your plan</Text>
+        <Text style={styles.headerSub}>
+          Here's everything included in your Linktree {tier.name} plan.
+        </Text>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
       >
-        {/* Order summary */}
-        <View style={styles.summaryCard}>
-          <LinearGradient
-            colors={["#7B3FE4", "#5B22C4"]}
-            style={styles.summaryGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            <View style={styles.summaryRow}>
-              <View>
-                <Text style={styles.summaryLabel}>Your plan</Text>
-                <Text style={styles.summaryPlan}>Linktree {tierInfo.name}</Text>
-              </View>
-              <View style={styles.summaryPriceBlock}>
-                <Text style={styles.summaryPrice}>{tierInfo.price}</Text>
-                <Text style={styles.summaryBilling}>{tierInfo.billing}</Text>
-              </View>
+        {/* Plan summary card */}
+        <LinearGradient
+          colors={tier.gradient}
+          style={styles.planCard}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.planCardTop}>
+            <View>
+              <Text style={styles.planLabel}>Your plan</Text>
+              <Text style={styles.planName}>Linktree {tier.name}</Text>
             </View>
-
-            <View style={styles.summaryDivider} />
-
-            <View style={styles.trialRow}>
-              <Feather name="gift" size={14} color="#C5E84F" />
-              <Text style={styles.trialText}>30-day free trial included</Text>
+            <View style={styles.planPriceBlock}>
+              <Text style={styles.planPrice}>{tier.price}</Text>
+              <Text style={styles.planBilling}>{tier.billing}</Text>
             </View>
-          </LinearGradient>
-        </View>
+          </View>
+          <View style={styles.planDivider} />
+          <View style={styles.trialRow}>
+            <Feather name="gift" size={16} color="#C5E84F" />
+            <Text style={styles.trialText}>30-day free trial — cancel anytime</Text>
+          </View>
+        </LinearGradient>
 
         {/* Trust badges */}
         <View style={styles.trustRow}>
-          {[
-            { icon: "lock" as const, label: "Secure payment" },
-            { icon: "refresh-cw" as const, label: "Cancel anytime" },
-            { icon: "shield" as const, label: "Encrypted" },
-          ].map((b) => (
-            <View key={b.label} style={styles.trustBadge}>
-              <Feather name={b.icon} size={14} color="#22C55E" />
-              <Text style={styles.trustText}>{b.label}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Card form */}
-        <View style={styles.cardSection}>
-          <Text style={styles.sectionTitle}>Card information</Text>
-
-          {/* Virtual card preview */}
-          <LinearGradient
-            colors={["#1A1A2E", "#16213E"]}
-            style={styles.cardPreview}
-          >
-            <View style={styles.cardLogoRow}>
-              <Text style={styles.cardLogoText}>VISA</Text>
-              <View style={styles.chipIcon}>
-                <View style={styles.chipInner} />
-              </View>
-            </View>
-            <Text style={styles.cardNumberDisplay}>{cardNumber}</Text>
-            <View style={styles.cardBottomRow}>
-              <View>
-                <Text style={styles.cardFieldLabel}>CARD HOLDER</Text>
-                <Text style={styles.cardFieldValue}>{cardName}</Text>
-              </View>
-              <View>
-                <Text style={styles.cardFieldLabel}>EXPIRES</Text>
-                <Text style={styles.cardFieldValue}>{expiry}</Text>
-              </View>
-            </View>
-          </LinearGradient>
-
-          {/* Card number input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Card number</Text>
-            <TextInput
-              style={styles.input}
-              value={cardNumber}
-              onChangeText={(v) => setCardNumber(formatCardNumber(v))}
-              keyboardType="numeric"
-              placeholder="1234 5678 9012 3456"
-              placeholderTextColor="#9CA3AF"
-            />
+          <View style={styles.trustItem}>
+            <Feather name="shield" size={16} color="#22C55E" />
+            <Text style={styles.trustText}>Secure & encrypted</Text>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Name on card</Text>
-            <TextInput
-              style={styles.input}
-              value={cardName}
-              onChangeText={setCardName}
-              placeholder="Your full name"
-              placeholderTextColor="#9CA3AF"
-              autoCapitalize="words"
-            />
+          <View style={styles.trustItem}>
+            <Feather name="refresh-cw" size={16} color="#22C55E" />
+            <Text style={styles.trustText}>Cancel anytime</Text>
           </View>
-
-          <View style={styles.inputRow}>
-            <View style={[styles.inputGroup, { flex: 1 }]}>
-              <Text style={styles.inputLabel}>Expiry</Text>
-              <TextInput
-                style={styles.input}
-                value={expiry}
-                onChangeText={setExpiry}
-                placeholder="MM/YY"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="numeric"
-                maxLength={5}
-              />
-            </View>
-            <View style={[styles.inputGroup, { flex: 1 }]}>
-              <Text style={styles.inputLabel}>CVV</Text>
-              <TextInput
-                style={styles.input}
-                value={cvv}
-                onChangeText={setCvv}
-                placeholder="•••"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="numeric"
-                maxLength={4}
-                secureTextEntry
-              />
-            </View>
+          <View style={styles.trustItem}>
+            <Feather name="clock" size={16} color="#22C55E" />
+            <Text style={styles.trustText}>Free for 30 days</Text>
           </View>
         </View>
 
-        {/* Or */}
-        <View style={styles.orRow}>
-          <View style={styles.orLine} />
-          <Text style={styles.orText}>OR PAY WITH</Text>
-          <View style={styles.orLine} />
-        </View>
-
-        {/* Apple/Google Pay buttons */}
-        <View style={styles.altPayRow}>
-          <Pressable style={[styles.altPayBtn, { backgroundColor: "#000000" }]}>
-            <Feather name="smartphone" size={18} color="#FFFFFF" />
-            <Text style={[styles.altPayText, { color: "#FFFFFF" }]}>Apple Pay</Text>
-          </Pressable>
-          <Pressable style={styles.altPayBtn}>
-            <View style={[styles.gPayG, { backgroundColor: "#4285F4" }]}>
-              <Text style={styles.gPayGText}>G</Text>
+        {/* What's included */}
+        <Text style={styles.includedTitle}>What's included</Text>
+        {tier.sections.map((section) => (
+          <View key={section.heading} style={styles.featureSection}>
+            <Text style={styles.sectionHeading}>{section.heading}</Text>
+            <View style={styles.itemList}>
+              {section.items.map((item) => (
+                <View key={item} style={styles.itemRow}>
+                  <View style={styles.checkCircle}>
+                    <Feather name="check" size={12} color="#7B3FE4" />
+                  </View>
+                  <Text style={styles.itemText}>{item}</Text>
+                </View>
+              ))}
             </View>
-            <Text style={styles.altPayText}>Google Pay</Text>
-          </Pressable>
+          </View>
+        ))}
+
+        {/* Billing notice */}
+        <View style={styles.billingNote}>
+          <Feather name="info" size={14} color="#9CA3AF" />
+          <Text style={styles.billingNoteText}>
+            Your card won't be charged until your 30-day free trial ends on{" "}
+            <Text style={styles.billingNoteBold}>April 23, 2026</Text>. You can cancel before then at no charge.
+          </Text>
         </View>
 
         <View style={{ height: 20 }} />
@@ -211,14 +202,15 @@ export default function PaymentReviewScreen() {
       {/* Footer */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
         <Pressable
-          style={({ pressed }) => [styles.payBtn, pressed && { opacity: 0.85 }]}
-          onPress={handleSubmit}
+          style={({ pressed }) => [styles.startBtn, pressed && { opacity: 0.85 }]}
+          onPress={() => router.push("/admin")}
         >
-          <Feather name="lock" size={16} color="#1D3C34" />
-          <Text style={styles.payBtnText}>
-            Start free trial — pay {tierInfo.price} after 30 days
-          </Text>
+          <Feather name="zap" size={18} color="#1D3C34" />
+          <Text style={styles.startBtnText}>Start my free trial</Text>
         </Pressable>
+        <Text style={styles.footerNote}>
+          Billed {tier.price} monthly after trial. Cancel anytime.
+        </Text>
       </View>
     </View>
   );
@@ -226,109 +218,119 @@ export default function PaymentReviewScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
-  header: { paddingHorizontal: 20, gap: 12, paddingBottom: 4 },
+  header: { paddingHorizontal: 20, gap: 6, paddingBottom: 4 },
   backBtn: { flexDirection: "row", alignItems: "center", gap: 2, alignSelf: "flex-start" },
   backText: { fontSize: 15, color: "#7B3FE4", fontFamily: "Inter_500Medium" },
-  progressBar: { height: 4, backgroundColor: "#E5E7EB", borderRadius: 2 },
+  progressBar: { height: 4, backgroundColor: "#E5E7EB", borderRadius: 2, marginTop: 6 },
   progressFill: { height: 4, backgroundColor: "#7B3FE4", borderRadius: 2 },
-  headerTitle: { fontSize: 22, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold" },
+  headerTitle: { fontSize: 24, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold", marginTop: 8 },
+  headerSub: { fontSize: 14, color: "#6B7280", fontFamily: "Inter_400Regular", lineHeight: 20 },
   scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
-  summaryCard: { borderRadius: 20, overflow: "hidden", marginBottom: 16 },
-  summaryGradient: { padding: 20 },
-  summaryRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  summaryLabel: { fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular" },
-  summaryPlan: { fontSize: 22, fontWeight: "700", color: "#FFFFFF", fontFamily: "Inter_700Bold" },
-  summaryPriceBlock: { alignItems: "flex-end" },
-  summaryPrice: { fontSize: 28, fontWeight: "800", color: "#C5E84F", fontFamily: "Inter_700Bold" },
-  summaryBilling: { fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular" },
-  summaryDivider: { height: 1, backgroundColor: "rgba(255,255,255,0.15)", marginVertical: 14 },
+  planCard: { borderRadius: 20, padding: 20, marginBottom: 14 },
+  planCardTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  planLabel: { fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter_500Medium" },
+  planName: { fontSize: 22, fontWeight: "700", color: "#FFFFFF", fontFamily: "Inter_700Bold" },
+  planPriceBlock: { alignItems: "flex-end" },
+  planPrice: { fontSize: 30, fontWeight: "800", color: "#C5E84F", fontFamily: "Inter_700Bold" },
+  planBilling: { fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular" },
+  planDivider: { height: 1, backgroundColor: "rgba(255,255,255,0.18)", marginVertical: 14 },
   trialRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   trialText: { fontSize: 14, color: "#C5E84F", fontFamily: "Inter_600SemiBold" },
   trustRow: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 20,
     backgroundColor: "#F0FFF4",
-    borderRadius: 12,
-    padding: 12,
-  },
-  trustBadge: { alignItems: "center", gap: 4 },
-  trustText: { fontSize: 11, color: "#374151", fontFamily: "Inter_500Medium" },
-  cardSection: { gap: 12, marginBottom: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold" },
-  cardPreview: {
-    borderRadius: 16,
-    padding: 20,
-    gap: 12,
-  },
-  cardLogoRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  cardLogoText: { fontSize: 18, fontWeight: "700", color: "#FFFFFF", fontFamily: "Inter_700Bold", letterSpacing: 2 },
-  chipIcon: {
-    width: 32,
-    height: 24,
-    borderRadius: 4,
-    backgroundColor: "#D4A017",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  chipInner: {
-    width: 20,
-    height: 14,
-    borderRadius: 3,
-    backgroundColor: "#FFD700",
-    opacity: 0.6,
-  },
-  cardNumberDisplay: {
-    fontSize: 20,
-    color: "#FFFFFF",
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 3,
-  },
-  cardBottomRow: { flexDirection: "row", justifyContent: "space-between" },
-  cardFieldLabel: { fontSize: 9, color: "rgba(255,255,255,0.5)", fontFamily: "Inter_700Bold", letterSpacing: 1, marginBottom: 2 },
-  cardFieldValue: { fontSize: 13, color: "#FFFFFF", fontFamily: "Inter_600SemiBold" },
-  inputGroup: { gap: 6 },
-  inputLabel: { fontSize: 12, color: "#6B7280", fontFamily: "Inter_600SemiBold", textTransform: "uppercase", letterSpacing: 0.4 },
-  input: {
-    backgroundColor: "#F8F7F5",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    fontSize: 15,
-    color: "#1A1A1A",
-    fontFamily: "Inter_500Medium",
-    borderWidth: 1.5,
-    borderColor: "transparent",
-  },
-  inputRow: { flexDirection: "row", gap: 12 },
-  orRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 12 },
-  orLine: { flex: 1, height: 1, backgroundColor: "#E5E7EB" },
-  orText: { fontSize: 11, color: "#9CA3AF", fontFamily: "Inter_600SemiBold", letterSpacing: 1 },
-  altPayRow: { flexDirection: "row", gap: 10 },
-  altPayBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingVertical: 12,
-    borderWidth: 1.5,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
-  altPayText: { fontSize: 15, fontWeight: "600", color: "#1A1A1A", fontFamily: "Inter_600SemiBold" },
-  gPayG: { width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center" },
-  gPayGText: { fontSize: 13, fontWeight: "700", color: "#FFFFFF", fontFamily: "Inter_700Bold" },
-  footer: { paddingHorizontal: 20, paddingTop: 12, borderTopWidth: 1, borderTopColor: "#F3F4F6" },
-  payBtn: {
+  trustItem: { alignItems: "center", gap: 5 },
+  trustText: { fontSize: 11, color: "#374151", fontFamily: "Inter_500Medium", textAlign: "center" },
+  includedTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1A1A1A",
+    fontFamily: "Inter_700Bold",
+    marginBottom: 14,
+  },
+  featureSection: {
+    marginBottom: 16,
+    backgroundColor: "#F8F7FF",
+    borderRadius: 16,
+    padding: 16,
+    borderLeftWidth: 3,
+    borderLeftColor: "#7B3FE4",
+  },
+  sectionHeading: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#7B3FE4",
+    fontFamily: "Inter_700Bold",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 10,
+  },
+  itemList: { gap: 8 },
+  itemRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+  checkCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: "#F0E8FF",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    marginTop: 1,
+  },
+  itemText: { fontSize: 14, color: "#374151", fontFamily: "Inter_400Regular", flex: 1, lineHeight: 20 },
+  billingNote: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 8,
+    backgroundColor: "#F9FAFB",
+    borderRadius: 12,
+    padding: 14,
+    marginTop: 4,
+  },
+  billingNoteText: {
+    flex: 1,
+    fontSize: 12,
+    color: "#9CA3AF",
+    fontFamily: "Inter_400Regular",
+    lineHeight: 18,
+  },
+  billingNoteBold: { fontFamily: "Inter_700Bold", color: "#6B7280" },
+  footer: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#F3F4F6",
+    gap: 10,
+  },
+  startBtn: {
     backgroundColor: "#C5E84F",
     borderRadius: 14,
     paddingVertical: 16,
-    alignItems: "center",
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "center",
     gap: 8,
   },
-  payBtnText: { fontSize: 15, fontWeight: "700", color: "#1D3C34", fontFamily: "Inter_700Bold", textAlign: "center" },
+  startBtnText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1D3C34",
+    fontFamily: "Inter_700Bold",
+  },
+  footerNote: {
+    fontSize: 12,
+    color: "#9CA3AF",
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+  },
 });

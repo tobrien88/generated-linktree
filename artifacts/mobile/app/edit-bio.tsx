@@ -251,6 +251,28 @@ export default function EditBioScreen() {
                 </View>
               );
             })}
+
+            {/* Add link button */}
+            <Pressable
+              style={({ pressed }) => [styles.addLinkBtn, pressed && { opacity: 0.75 }]}
+              onPress={() => {
+                const newLink: Link = {
+                  id: Date.now().toString(),
+                  title: "New link",
+                  url: "",
+                  color: "#6B7280",
+                  icon: "link",
+                  enabled: true,
+                };
+                setLinks((prev) => [...prev, newLink]);
+                setExpandedId(newLink.id);
+              }}
+            >
+              <View style={styles.addLinkIcon}>
+                <Feather name="plus" size={16} color="#7B3FE4" />
+              </View>
+              <Text style={styles.addLinkText}>Add a link</Text>
+            </Pressable>
           </View>
 
           <View style={{ height: 20 }} />
@@ -544,5 +566,31 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#7B3FE4",
     marginTop: 2,
+  },
+
+  addLinkBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    borderWidth: 1.5,
+    borderColor: "#E0D4FF",
+    borderStyle: "dashed",
+    borderRadius: 14,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    marginTop: 4,
+  },
+  addLinkIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#F0E8FF",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addLinkText: {
+    fontSize: 14,
+    color: "#7B3FE4",
+    fontFamily: "Inter_600SemiBold",
   },
 });

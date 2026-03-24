@@ -1,4 +1,5 @@
-import { useVideoPlayer, VideoView } from "expo-video";
+import { StyleSheet, View } from "react-native";
+import { Video, ResizeMode } from "expo-av";
 
 interface Props {
   source: ReturnType<typeof require>;
@@ -8,18 +9,17 @@ interface Props {
 }
 
 export default function AutoVideo({ source, style }: Props) {
-  const player = useVideoPlayer(source, (p) => {
-    p.loop = true;
-    p.muted = true;
-    p.play();
-  });
-
   return (
-    <VideoView
-      player={player}
-      style={style}
-      contentFit="cover"
-      nativeControls={false}
-    />
+    <View style={[style, { overflow: "hidden" }]}>
+      <Video
+        source={source}
+        style={StyleSheet.absoluteFill}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay
+        isLooping
+        isMuted
+        useNativeControls={false}
+      />
+    </View>
   );
 }

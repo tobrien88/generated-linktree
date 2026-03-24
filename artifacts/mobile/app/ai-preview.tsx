@@ -138,22 +138,23 @@ export default function AIPreviewScreen() {
         ...(Platform.OS === "web" ? { height: "100vh" as unknown as number } : {}),
       },
     ]}>
-      <View style={styles.header}>
-        <View style={styles.sparkleRow}>
-          <Feather name="zap" size={14} color="#7B3FE4" />
-          <Text style={styles.sparkleLabel}>AI-Generated</Text>
-        </View>
-        <Text style={styles.headerTitle}>Your Linktree is ready</Text>
-        <Text style={styles.headerSub}>
-          Built from your social signals. Tap below to customize.
-        </Text>
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Header scrolls with content */}
+        <View style={styles.header}>
+          <View style={styles.sparkleRow}>
+            <Feather name="zap" size={14} color="#7B3FE4" />
+            <Text style={styles.sparkleLabel}>AI-Generated</Text>
+          </View>
+          <Text style={styles.headerTitle}>Your Linktree is ready</Text>
+          <Text style={styles.headerSub}>
+            Built from your social signals. Tap below to customize.
+          </Text>
+        </View>
+
         {/* Pro mockup card */}
         <View style={styles.mockupCard}>
           <ImageBackground
@@ -251,7 +252,7 @@ export default function AIPreviewScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
-  header: { paddingHorizontal: 20, paddingBottom: 0, paddingTop: 12, gap: 4 },
+  header: { paddingBottom: 12, paddingTop: 4, gap: 4 },
   sparkleRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -227,18 +227,16 @@ export default function AIPreviewScreen() {
           </View>
         </View>
 
-        <View style={{ height: 100 }} />
+        {/* CTA scrolls with content */}
+        <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
+          <Pressable
+            style={({ pressed }) => [styles.continueBtn, pressed && { opacity: 0.85 }]}
+            onPress={() => router.push("/monetization")}
+          >
+            <Text style={styles.continueBtnText}>Continue building this Linktree</Text>
+          </Pressable>
+        </View>
       </ScrollView>
-
-      {/* Footer */}
-      <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
-        <Pressable
-          style={({ pressed }) => [styles.continueBtn, pressed && { opacity: 0.85 }]}
-          onPress={() => router.push("/monetization")}
-        >
-          <Text style={styles.continueBtnText}>Continue building this Linktree</Text>
-        </Pressable>
-      </View>
     </View>
   );
 }

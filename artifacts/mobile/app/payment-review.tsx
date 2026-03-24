@@ -38,14 +38,16 @@ const TIER_DATA: Record<string, {
         items: [
           "Custom color palettes",
           "Remove Linktree branding",
-          "Your Nova Earth terracotta palette included",
+          "Nova Earth terracotta palette — ready to activate",
+          "Social media icons",
         ],
       },
       {
-        heading: "Support & Tools",
+        heading: "Tools & Support",
         items: [
+          "2 scheduled link time slots",
+          "Collect email addresses",
           "Priority email support",
-          "2 scheduled link slots",
         ],
       },
     ],
@@ -62,9 +64,10 @@ const TIER_DATA: Record<string, {
         heading: "AI-Personalization",
         items: [
           "Full AI-personalized Linktree",
-          "Bio generation from your social signals",
+          "AI bio generation from your social signals",
+          "Personalized theme & color matching",
           "Smart link ordering by engagement",
-          "Personalized theme matching",
+          "Audience demographic insights",
         ],
       },
       {
@@ -72,16 +75,18 @@ const TIER_DATA: Record<string, {
         items: [
           "Custom logo upload",
           "Full-screen video background",
+          "Link thumbnails & spotlight links",
           "Unlimited themes",
         ],
       },
       {
-        heading: "Growth & Analytics",
+        heading: "Growth & Commerce",
         items: [
-          "Advanced analytics dashboard",
-          "Audience demographic insights",
+          "Advanced analytics & UTM tracking",
           "Unlimited scheduling",
           "Sell products & collect payments",
+          "Leap links & auto-redirects",
+          "Priority 24/7 support",
         ],
       },
     ],
@@ -98,24 +103,25 @@ const TIER_DATA: Record<string, {
         heading: "Creator Commerce",
         items: [
           "0% transaction fees on all sales",
-          "White-label experience",
-          "Custom domain support",
+          "Custom domain (yourname.com)",
+          "White-label — no Linktree branding",
         ],
       },
       {
         heading: "Concierge & Support",
         items: [
           "Dedicated concierge setup session",
-          "Priority queue support",
+          "Priority support queue",
           "Early access to new features",
         ],
       },
       {
-        heading: "Enterprise",
+        heading: "Team & Enterprise",
         items: [
-          "Team member seats",
+          "Multiple team member seats",
           "Brand kit management",
-          "API access",
+          "API access & webhooks",
+          "Bulk link management",
         ],
       },
     ],

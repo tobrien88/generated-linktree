@@ -41,6 +41,12 @@ const NOVA_LINKS = [
     subtitle: "YouTube · @NovaOnTheMove",
     featured: false,
   },
+  {
+    id: "website",
+    title: "novaonthemove.com",
+    subtitle: "My full blog & travel resources",
+    featured: false,
+  },
 ];
 
 const RATIONALE = [

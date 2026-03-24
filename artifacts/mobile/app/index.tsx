@@ -286,6 +286,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignSelf: "center",
     overflow: "hidden",
+    backgroundColor: "#C5E84F",
   },
 
   blueSection: {
@@ -331,5 +332,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     alignSelf: "center",
     overflow: "hidden",
+    backgroundColor: "#3D4FDB",
   },
 });

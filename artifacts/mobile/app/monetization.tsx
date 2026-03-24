@@ -394,7 +394,13 @@ export default function MonetizationScreen() {
             <TierCard
               tier={tier}
               isSelected={selectedTier === tier.id}
-              onSelect={() => scrollToIndex(idx)}
+              onSelect={() => {
+                  scrollToIndex(idx);
+                  if (tier.id !== "free") {
+                    setSelectedTier(tier.id);
+                    router.push("/payment-review");
+                  }
+                }}
             />
           </View>
         ))}

@@ -146,7 +146,7 @@ export default function AILoadingScreen() {
       msgIndexRef.current = Math.min(msgIndexRef.current + 1, MESSAGES.length - 1);
       setMessageIndex(msgIndexRef.current);
       startTyping(MESSAGES[msgIndexRef.current]);
-    }, 500);
+    }, 1400);
 
     // Auto-navigate
     const navTimeout = setTimeout(() => {

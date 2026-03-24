@@ -1,9 +1,7 @@
-import { Video, ResizeMode } from "expo-av";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Dimensions,
-  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -17,10 +15,14 @@ import { SvgXml } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
+import AutoVideo from "@/components/AutoVideo";
 
 const SCREEN_W = Dimensions.get("window").width;
 
 const LINKTREE_MARK_SVG = `<svg viewBox="984 0 192 238" xmlns="http://www.w3.org/2000/svg"><path d="M984.643 79.1509H1042.56L1001.32 40.1226L1024.05 16.9609L1063.28 57.0835V0H1097.37V57.0835L1136.59 16.9609L1159.32 40.1226L1118.08 79.1509H1176V111.431H1117.71L1159.14 151.554L1136.41 174.169L1080.14 117.815L1023.87 174.169L1001.14 151.554L1042.56 111.431H984.277V79.1509H984.643ZM1063.46 157.572H1097.55V234.17H1063.46V157.572Z"/></svg>`;
+
+const heroSrc = require("../assets/images/hero_demo.mp4");
+const demoSrc = require("../assets/images/customize_linktree.mp4");
 
 export default function LandingScreen() {
   const insets = useSafeAreaInsets();
@@ -116,11 +118,12 @@ export default function LandingScreen() {
             </Pressable>
           </View>
 
-          {/* Hero lifestyle image */}
-          <Image
-            source={require("../assets/images/homepage1.png")}
-            style={styles.heroImage}
-            resizeMode="cover"
+          {/* Hero demo video — below first CTA */}
+          <AutoVideo
+            source={heroSrc}
+            videoPath="/hero_demo.mp4"
+            posterPath="/homepage1.png"
+            style={styles.heroVideo}
           />
         </View>
 
@@ -145,15 +148,10 @@ export default function LandingScreen() {
             <Text style={styles.blueCtaText}>Get started for free</Text>
           </Pressable>
 
-          {/* Product demo video */}
-          <Video
-            source={require("../assets/images/customize_linktree.mp4")}
+          <AutoVideo
+            source={demoSrc}
+            videoPath="/customize_linktree.mp4"
             style={styles.demoVideo}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay
-            isLooping
-            isMuted
-            useNativeControls={false}
           />
         </View>
 
@@ -282,12 +280,13 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontFamily: "DMSans_700Bold",
   },
-  heroImage: {
+  heroVideo: {
     width: SCREEN_W - 32,
-    height: 260,
+    height: 280,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     alignSelf: "center",
+    overflow: "hidden",
   },
 
   blueSection: {

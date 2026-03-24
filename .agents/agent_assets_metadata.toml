@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "2b-BJN8Qripiacrb5Z0rN"
+uri = "file://README.md"
+type = "text"
+title = "Linktree AI-Native Onboarding — README"

@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   editRow: {
     flexDirection: "row",
     gap: 10,
-    marginTop: 14,
+    marginTop: 24,
   },
   editBtn: {
     flex: 1,

@@ -88,16 +88,17 @@ export default function PaymentScreen() {
         {/* ─── Payment ───────────────────────────────────── */}
         <Text style={styles.sectionHeading}>Payment</Text>
 
-        {/* Card option */}
-        <Pressable style={[styles.payOption, method === "card" && styles.payOptionSelected]} onPress={() => setMethod("card")}>
-          <View style={styles.payOptionHeader}>
+        {/* Payment method group */}
+        <View style={styles.paymentGroup}>
+          {/* Card */}
+          <Pressable style={styles.payGroupRow} onPress={() => setMethod("card")}>
             <Radio selected={method === "card"} />
             <Feather name="credit-card" size={18} color="#1A1A1A" style={{ marginLeft: 8 }} />
             <Text style={styles.payOptionLabel}>Card</Text>
-          </View>
+          </Pressable>
+
           {method === "card" && (
             <View style={styles.cardForm}>
-              {/* Card number */}
               <View style={styles.fieldRow}>
                 <TextInput
                   style={styles.fieldInput}
@@ -114,7 +115,6 @@ export default function PaymentScreen() {
                   <FontAwesome5 name="cc-amex" size={14} color="#2E77BC" />
                 </View>
               </View>
-              {/* Expiry + CVV */}
               <View style={styles.twoCol}>
                 <TextInput
                   style={[styles.input, styles.inputHalf]}
@@ -139,7 +139,6 @@ export default function PaymentScreen() {
                   <Feather name="credit-card" size={16} color="#9CA3AF" />
                 </View>
               </View>
-              {/* Country */}
               <View style={[styles.input, styles.countryRow]}>
                 <View>
                   <Text style={styles.countryLabel}>Country</Text>
@@ -147,7 +146,6 @@ export default function PaymentScreen() {
                 </View>
                 <Feather name="chevron-down" size={18} color="#6B7280" />
               </View>
-              {/* ZIP */}
               <TextInput
                 style={styles.input}
                 placeholder="ZIP code"
@@ -159,24 +157,28 @@ export default function PaymentScreen() {
               />
             </View>
           )}
-        </Pressable>
 
-        {/* Google Pay */}
-        <Pressable style={[styles.payOption, styles.payOptionFlat]} onPress={() => setMethod("googlepay")}>
-          <Radio selected={method === "googlepay"} />
-          <FontAwesome5 name="google" size={16} color="#4285F4" style={{ marginLeft: 10 }} />
-          <Text style={styles.payOptionLabel}>Google Pay</Text>
-        </Pressable>
+          <View style={styles.payGroupDivider} />
 
-        {/* PayPal */}
-        <Pressable style={[styles.payOption, styles.payOptionFlat, styles.payOptionLast]} onPress={() => setMethod("paypal")}>
-          <Radio selected={method === "paypal"} />
-          <FontAwesome5 name="paypal" size={20} color="#003087" style={{ marginLeft: 10 }} />
-          <Text style={[styles.payOptionLabel, { color: "#003087", fontFamily: "Inter_700Bold" }]}>PayPal</Text>
-          <View style={styles.paypalHelpBtn}>
-            <Feather name="help-circle" size={18} color="#FFFFFF" />
-          </View>
-        </Pressable>
+          {/* Google Pay */}
+          <Pressable style={styles.payGroupRow} onPress={() => setMethod("googlepay")}>
+            <Radio selected={method === "googlepay"} />
+            <FontAwesome5 name="google" size={16} color="#4285F4" style={{ marginLeft: 10 }} />
+            <Text style={styles.payOptionLabel}>Google Pay</Text>
+          </Pressable>
+
+          <View style={styles.payGroupDivider} />
+
+          {/* PayPal */}
+          <Pressable style={styles.payGroupRow} onPress={() => setMethod("paypal")}>
+            <Radio selected={method === "paypal"} />
+            <FontAwesome5 name="paypal" size={20} color="#003087" style={{ marginLeft: 10 }} />
+            <Text style={[styles.payOptionLabel, { color: "#003087", fontFamily: "Inter_700Bold" }]}>PayPal</Text>
+            <View style={styles.paypalHelpBtn}>
+              <Feather name="help-circle" size={18} color="#FFFFFF" />
+            </View>
+          </Pressable>
+        </View>
 
         <Text style={styles.cookiePref}>Cookie Preferences</Text>
 
@@ -262,38 +264,27 @@ const styles = StyleSheet.create({
 
   sectionHeading: { fontSize: 18, fontFamily: "Inter_700Bold", color: "#1A1A1A", marginBottom: 12, marginTop: 4 },
 
-  payOption: {
-    borderWidth: 1.5,
+  paymentGroup: {
+    borderWidth: 1,
     borderColor: "#E5E7EB",
     borderRadius: 12,
-    padding: 14,
-    marginBottom: 0,
-  },
-  payOptionSelected: {
-    borderColor: "#1A1A1A",
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    borderBottomWidth: 0,
-  },
-  payOptionFlat: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderTopWidth: 0,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    marginBottom: 0,
-  },
-  payOptionLast: {
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    overflow: "hidden",
     marginBottom: 6,
   },
-  payOptionHeader: { flexDirection: "row", alignItems: "center" },
+  payGroupRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+  },
+  payGroupDivider: {
+    height: 1,
+    backgroundColor: "#E5E7EB",
+    marginHorizontal: 14,
+  },
   payOptionLabel: { fontSize: 15, fontFamily: "Inter_500Medium", color: "#1A1A1A", marginLeft: 8 },
 
-  cardForm: { marginTop: 14, gap: 10 },
+  cardForm: { paddingHorizontal: 14, paddingBottom: 14, gap: 10 },
   fieldRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -1,7 +1,7 @@
 import {
-  DM_Sans_400Regular,
-  DM_Sans_500Medium,
-  DM_Sans_700Bold,
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 import {
   Inter_400Regular,
@@ -49,9 +49,9 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
-    DM_Sans_400Regular,
-    DM_Sans_500Medium,
-    DM_Sans_700Bold,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
   });
 
   useEffect(() => {

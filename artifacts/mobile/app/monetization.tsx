@@ -90,7 +90,18 @@ const TIER_META: TierMeta[] = [
   },
 ];
 
-const PREVIEW_LINKS = ["Free SE Asia Travel Guide", "Follow me on TikTok", "My Lightroom Preset Pack"];
+const PREVIEW_LINKS_TEXT = ["Free SE Asia Travel Guide", "Follow me on TikTok", "My Lightroom Preset Pack"];
+
+const PREVIEW_LINKS_THUMB = [
+  {
+    title: "Free SE Asia Travel Guide",
+    thumbnail: require("../assets/images/monkey-thai-market.png") as ReturnType<typeof require>,
+  },
+  {
+    title: "Follow me on TikTok",
+    thumbnail: require("../assets/images/tiktok-logo-nobg.png") as ReturnType<typeof require>,
+  },
+];
 
 function ProfilePreview({ tierId }: { tierId: Tier }) {
   const socials = (color: string, opacity = 1) => (
@@ -131,9 +142,10 @@ function ProfilePreview({ tierId }: { tierId: Tier }) {
             </View>
             <Text style={styles.previewHandle}>@novaonthemove</Text>
             {socials("rgba(255,255,255,0.78)")}
-            {PREVIEW_LINKS.map((title) => (
-              <View key={title} style={styles.previewLinkDark}>
-                <Text style={styles.previewLinkTextDark} numberOfLines={1}>{title}</Text>
+            {PREVIEW_LINKS_THUMB.map((link) => (
+              <View key={link.title} style={styles.previewLinkDark}>
+                <Image source={link.thumbnail} style={styles.previewLinkThumb} contentFit="cover" />
+                <Text style={styles.previewLinkTextDark} numberOfLines={1}>{link.title}</Text>
               </View>
             ))}
           </LinearGradient>
@@ -156,7 +168,7 @@ function ProfilePreview({ tierId }: { tierId: Tier }) {
           </View>
           <Text style={styles.previewHandleStandard}>@novaonthemove</Text>
           {socials("rgba(255,255,255,0.78)")}
-          {PREVIEW_LINKS.map((title) => (
+          {PREVIEW_LINKS_TEXT.map((title) => (
             <View key={title} style={styles.previewLinkRect}>
               <Text style={[styles.previewLinkTextRect, { color: "#FFFFFF" }]} numberOfLines={1}>{title}</Text>
             </View>
@@ -174,7 +186,7 @@ function ProfilePreview({ tierId }: { tierId: Tier }) {
         </View>
         <Text style={[styles.previewHandleStandard, { color: "#1A1A1A" }]}>@novaonthemove</Text>
         {socials("#9CA3AF", 0.7)}
-        {PREVIEW_LINKS.map((title) => (
+        {PREVIEW_LINKS_TEXT.map((title) => (
           <View key={title} style={styles.previewLinkFree}>
             <Text style={styles.previewLinkTextFree} numberOfLines={1}>{title}</Text>
           </View>
@@ -467,14 +479,25 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 50,
-    paddingVertical: 7,
-    paddingHorizontal: 14,
+    paddingVertical: 5,
+    paddingHorizontal: 6,
+    flexDirection: "row",
     alignItems: "center",
+    gap: 8,
+  },
+  previewLinkThumb: {
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    flexShrink: 0,
   },
   previewLinkTextDark: {
     fontSize: 11,
     color: "#1A1A1A",
     fontFamily: "Inter_600SemiBold",
+    flex: 1,
+    textAlign: "center",
+    paddingRight: 38,
   },
   previewLinkRect: {
     width: "100%",

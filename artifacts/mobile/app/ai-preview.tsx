@@ -131,7 +131,13 @@ export default function AIPreviewScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
+    <View style={[
+      styles.container,
+      {
+        paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0),
+        ...(Platform.OS === "web" ? { height: "100vh" as unknown as number } : {}),
+      },
+    ]}>
       <View style={styles.header}>
         <View style={styles.sparkleRow}>
           <Feather name="zap" size={14} color="#7B3FE4" />
@@ -227,16 +233,18 @@ export default function AIPreviewScreen() {
           </View>
         </View>
 
-        {/* CTA scrolls with content */}
-        <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
-          <Pressable
-            style={({ pressed }) => [styles.continueBtn, pressed && { opacity: 0.85 }]}
-            onPress={() => router.push("/monetization")}
-          >
-            <Text style={styles.continueBtnText}>Continue building this Linktree</Text>
-          </Pressable>
-        </View>
+        <View style={{ height: 20 }} />
       </ScrollView>
+
+      {/* Sticky CTA overlay at bottom */}
+      <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
+        <Pressable
+          style={({ pressed }) => [styles.continueBtn, pressed && { opacity: 0.85 }]}
+          onPress={() => router.push("/monetization")}
+        >
+          <Text style={styles.continueBtnText}>Continue building this Linktree</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

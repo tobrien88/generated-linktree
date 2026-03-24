@@ -17,7 +17,7 @@ export default function AutoVideo({ source, style }: Props) {
   return (
     <VideoView
       player={player}
-      style={style}
+      style={[style, { backgroundColor: "transparent" }]}
       contentFit="cover"
       nativeControls={false}
     />

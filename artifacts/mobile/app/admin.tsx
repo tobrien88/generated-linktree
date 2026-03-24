@@ -523,12 +523,20 @@ export default function AdminScreen() {
                   </Text>
                   <Text style={styles.linkClicks}>{link.clicks.toLocaleString()} clicks</Text>
                 </View>
-                <Pressable
-                  style={[styles.toggleBtn, !!linkToggles[link.id] && styles.toggleBtnOn]}
-                  onPress={() => handleToggleLink(link.id)}
-                >
-                  <View style={[styles.toggleThumb, !!linkToggles[link.id] && styles.toggleThumbOn]} />
-                </Pressable>
+                <View style={styles.linkActions}>
+                  <Pressable style={styles.linkActionBtn} hitSlop={6}>
+                    <Feather name="edit-2" size={14} color="#9CA3AF" />
+                  </Pressable>
+                  <Pressable style={styles.linkActionBtn} hitSlop={6}>
+                    <Feather name="share-2" size={14} color="#9CA3AF" />
+                  </Pressable>
+                  <Pressable
+                    style={[styles.toggleBtn, !!linkToggles[link.id] && styles.toggleBtnOn]}
+                    onPress={() => handleToggleLink(link.id)}
+                  >
+                    <View style={[styles.toggleThumb, !!linkToggles[link.id] && styles.toggleThumbOn]} />
+                  </Pressable>
+                </View>
               </View>
             );
           })}
@@ -801,6 +809,15 @@ const styles = StyleSheet.create({
   linkIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   linkTitle: { fontSize: 14, fontWeight: "600", color: "#1A1A1A", fontFamily: "Inter_600SemiBold" },
   linkClicks: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular" },
+  linkActions: { flexDirection: "row", alignItems: "center", gap: 6 },
+  linkActionBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   toggleBtn: {
     width: 44,
     height: 26,

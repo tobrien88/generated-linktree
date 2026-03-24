@@ -154,11 +154,11 @@ function ProfilePreview({ tierId }: { tierId: Tier }) {
           <View style={[styles.previewAvatarRing, { borderColor: "rgba(255,255,255,0.7)" }]}>
             <Image source={require("../assets/images/nova-avatar.png")} style={styles.previewAvatar} contentFit="cover" />
           </View>
-          <Text style={[styles.previewHandle, { color: "#FFFFFF" }]}>@novaonthemove</Text>
+          <Text style={styles.previewHandleStandard}>@novaonthemove</Text>
           {socials("rgba(255,255,255,0.78)")}
           {PREVIEW_LINKS.map((title) => (
-            <View key={title} style={[styles.previewLinkDark, { backgroundColor: "rgba(255,255,255,0.32)" }]}>
-              <Text style={[styles.previewLinkTextDark, { color: "#FFFFFF" }]} numberOfLines={1}>{title}</Text>
+            <View key={title} style={styles.previewLinkRect}>
+              <Text style={[styles.previewLinkTextRect, { color: "#FFFFFF" }]} numberOfLines={1}>{title}</Text>
             </View>
           ))}
         </LinearGradient>
@@ -172,7 +172,7 @@ function ProfilePreview({ tierId }: { tierId: Tier }) {
         <View style={[styles.previewAvatarRing, { borderColor: "#E5E7EB" }]}>
           <Image source={require("../assets/images/nova-avatar.png")} style={styles.previewAvatar} contentFit="cover" />
         </View>
-        <Text style={[styles.previewHandle, { color: "#1A1A1A" }]}>@novaonthemove</Text>
+        <Text style={[styles.previewHandleStandard, { color: "#1A1A1A" }]}>@novaonthemove</Text>
         {socials("#9CA3AF", 0.7)}
         {PREVIEW_LINKS.map((title) => (
           <View key={title} style={styles.previewLinkFree}>
@@ -451,6 +451,13 @@ const styles = StyleSheet.create({
     fontFamily: "Quicksand_700Bold",
     letterSpacing: 0.3,
   },
+  previewHandleStandard: {
+    fontSize: 15,
+    color: "#FFFFFF",
+    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 0,
+    marginBottom: 2,
+  },
   previewSocials: {
     flexDirection: "row",
     gap: 10,
@@ -469,15 +476,29 @@ const styles = StyleSheet.create({
     color: "#1A1A1A",
     fontFamily: "Inter_600SemiBold",
   },
-  previewLinkFree: {
+  previewLinkRect: {
     width: "100%",
-    backgroundColor: "#F3F4F6",
-    borderRadius: 50,
+    backgroundColor: "rgba(255,255,255,0.28)",
+    borderRadius: 8,
     paddingVertical: 7,
     paddingHorizontal: 14,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "rgba(255,255,255,0.45)",
+  },
+  previewLinkTextRect: {
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+  },
+  previewLinkFree: {
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
   },
   previewLinkTextFree: {
     fontSize: 11,

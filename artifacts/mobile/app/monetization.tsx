@@ -39,7 +39,7 @@ const TIER_META: TierMeta[] = [
     price: "$0",
     billing: "forever",
     tagline: "Get your links live in minutes.",
-    cta: "Continue with Free",
+    cta: "Get started",
     trialNote: null,
     callouts: [
       { icon: "link", label: "Unlimited links", desc: "Add as many links as you need" },
@@ -53,7 +53,7 @@ const TIER_META: TierMeta[] = [
     price: "$6",
     billing: "/mo",
     tagline: "Make it yours with your own style.",
-    cta: "Get started with Starter",
+    cta: "Get started",
     trialNote: "No free trial. Cancel anytime.",
     callouts: [
       { icon: "droplet", label: "Custom color palette", desc: "Match your brand — terracotta theme ready" },
@@ -67,7 +67,7 @@ const TIER_META: TierMeta[] = [
     price: "$12",
     billing: "/mo",
     tagline: "Advanced customization for serious creators.",
-    cta: "Try Pro free for 7 days",
+    cta: "Try free for 7 days",
     trialNote: "Free for 7 days. Then $12/mo. Cancel anytime.",
     callouts: [
       { icon: "image", label: "Photo background & custom theme", desc: "Your SE Asia landscape, ready to go" },
@@ -81,7 +81,7 @@ const TIER_META: TierMeta[] = [
     price: "$30",
     billing: "/mo",
     tagline: "For power creators scaling their brand.",
-    cta: "Get started with Premium",
+    cta: "Try free for 7 days",
     trialNote: "No free trial. Cancel anytime.",
     callouts: [
       { icon: "percent", label: "0% transaction fees", desc: "Keep every dollar you earn" },
@@ -231,7 +231,7 @@ export default function MonetizationScreen() {
     if (activeId === "free") {
       router.push("/admin");
     } else {
-      router.push("/payment-review");
+      router.push("/payment");
     }
   };
 
@@ -333,6 +333,11 @@ export default function MonetizationScreen() {
 
       {/* Sticky footer */}
       <View style={[styles.footer, { paddingBottom: insets.bottom + (Platform.OS === "web" ? 34 : 16) }]}>
+        {activeId !== "free" && (
+          <Pressable onPress={() => router.push("/payment-review")} hitSlop={8}>
+            <Text style={styles.compareLink}>Compare plan features</Text>
+          </Pressable>
+        )}
         <Pressable
           style={({ pressed }) => [
             styles.ctaBtn,
@@ -650,5 +655,13 @@ const styles = StyleSheet.create({
     color: "#9CA3AF",
     fontFamily: "Inter_400Regular",
     textAlign: "center",
+  },
+  compareLink: {
+    fontSize: 13,
+    color: "#7B3FE4",
+    fontFamily: "Inter_500Medium",
+    textAlign: "center",
+    textDecorationLine: "underline",
+    marginBottom: 2,
   },
 });

@@ -35,7 +35,7 @@ const TIER_DATA: Record<string, {
     annualTotalPrice: "$72.00",
     annualSavePct: 25,
     trialLabel: null,
-    ctaText: "Get started with Starter",
+    ctaText: "Get started",
     gradient: ["#F59E0B", "#D97706"],
     sections: [
       {
@@ -67,7 +67,7 @@ const TIER_DATA: Record<string, {
     annualTotalPrice: "$144.00",
     annualSavePct: 20,
     trialLabel: "7-day free trial",
-    ctaText: "Try Pro free for 7 days",
+    ctaText: "Try free for 7 days",
     gradient: ["#7B3FE4", "#5B22C4"],
     sections: [
       {
@@ -112,7 +112,7 @@ const TIER_DATA: Record<string, {
     annualTotalPrice: "$360.00",
     annualSavePct: 14,
     trialLabel: null,
-    ctaText: "Get started with Premium",
+    ctaText: "Try free for 7 days",
     gradient: ["#B8860B", "#8B6914"],
     sections: [
       {
@@ -296,7 +296,6 @@ export default function PaymentReviewScreen() {
           style={({ pressed }) => [styles.startBtn, pressed && { opacity: 0.85 }]}
           onPress={() => router.push("/payment")}
         >
-          <Feather name="zap" size={18} color="#1D3C34" />
           <Text style={styles.startBtnText}>{tier.ctaText}</Text>
         </Pressable>
         <Text style={styles.footerNote}>{billingNote}</Text>

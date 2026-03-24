@@ -16,10 +16,10 @@ import { useOnboarding } from "@/context/OnboardingContext";
 
 type PaymentMethod = "card" | "googlepay" | "paypal";
 
-const TIER_PRICES: Record<string, { monthly: number; annual: number; name: string; hasTrial: boolean }> = {
-  starter: { monthly: 8, annual: 6 * 12, name: "Starter", hasTrial: false },
-  pro:     { monthly: 15, annual: 12 * 12, name: "Pro",     hasTrial: true  },
-  premium: { monthly: 35, annual: 30 * 12, name: "Premium", hasTrial: false },
+const TIER_PRICES: Record<string, { monthly: number; annual: number; name: string; hasTrial: boolean; ctaLabel: string }> = {
+  starter: { monthly: 8, annual: 6 * 12, name: "Starter", hasTrial: false, ctaLabel: "Confirm purchase" },
+  pro:     { monthly: 15, annual: 12 * 12, name: "Pro",     hasTrial: true,  ctaLabel: "Start your free trial" },
+  premium: { monthly: 35, annual: 30 * 12, name: "Premium", hasTrial: false, ctaLabel: "Try free for 7 days" },
 };
 
 function Radio({ selected }: { selected: boolean }) {
@@ -230,10 +230,8 @@ export default function PaymentScreen() {
           style={({ pressed }) => [styles.ctaBtn, pressed && { opacity: 0.9 }]}
           onPress={() => router.push("/admin")}
         >
-          <Feather name="zap" size={18} color="#1D3C34" />
-          <Text style={styles.ctaBtnText}>
-            {tierInfo.hasTrial ? "Start your free trial" : `Start ${tierInfo.name}`}
-          </Text>
+          <Feather name="zap" size={18} color="#FFFFFF" />
+          <Text style={styles.ctaBtnText}>{tierInfo.ctaLabel}</Text>
         </Pressable>
         {tierInfo.hasTrial && (
           <Text style={styles.footerNote}>
@@ -414,7 +412,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   ctaBtn: {
-    backgroundColor: "#C5E84F",
+    backgroundColor: "#7B3FE4",
     borderRadius: 50,
     paddingVertical: 16,
     flexDirection: "row",
@@ -422,6 +420,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  ctaBtnText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#1D3C34" },
+  ctaBtnText: { fontSize: 16, fontFamily: "Inter_600SemiBold", color: "#FFFFFF" },
   footerNote: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular", textAlign: "center" },
 });

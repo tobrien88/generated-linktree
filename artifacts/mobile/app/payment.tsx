@@ -19,7 +19,7 @@ type PaymentMethod = "card" | "googlepay" | "paypal";
 const TIER_PRICES: Record<string, { monthly: number; annual: number; name: string; hasTrial: boolean; ctaLabel: string }> = {
   starter: { monthly: 8, annual: 6 * 12, name: "Starter", hasTrial: false, ctaLabel: "Confirm purchase" },
   pro:     { monthly: 15, annual: 12 * 12, name: "Pro",     hasTrial: true,  ctaLabel: "Start your free trial" },
-  premium: { monthly: 35, annual: 30 * 12, name: "Premium", hasTrial: false, ctaLabel: "Try free for 7 days" },
+  premium: { monthly: 35, annual: 30 * 12, name: "Premium", hasTrial: true,  ctaLabel: "Try free for 7 days" },
 };
 
 function Radio({ selected }: { selected: boolean }) {

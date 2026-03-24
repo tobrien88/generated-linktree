@@ -82,7 +82,7 @@ const TIER_META: TierMeta[] = [
     billing: "/mo",
     tagline: "For power creators scaling their brand.",
     cta: "Try free for 7 days",
-    trialNote: "No free trial. Cancel anytime.",
+    trialNote: "Free for 7 days. Then $30/mo. Cancel anytime.",
     callouts: [
       { icon: "percent", label: "0% transaction fees", desc: "Keep every dollar you earn" },
       { icon: "message-circle", label: "Unlimited Instagram DM replies", desc: "Auto-respond to fans 24/7" },

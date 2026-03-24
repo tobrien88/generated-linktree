@@ -542,7 +542,7 @@ export default function AdminScreen() {
           })}
         </View>
 
-        <View style={{ height: insets.bottom + (Platform.OS === "web" ? 34 : 30) }} />
+        <View style={{ height: insets.bottom + (Platform.OS === "web" ? 120 : 110) }} />
       </ScrollView>
 
       {/* Floating bottom-left circular progress */}
@@ -559,6 +559,25 @@ export default function AdminScreen() {
       </Pressable>
 
       <ShareBottomSheet visible={shareOpen} onClose={() => setShareOpen(false)} />
+
+      {/* Bottom navigation bar */}
+      <View style={[styles.bottomNav, { paddingBottom: insets.bottom || 12 }]}>
+        {(
+          [
+            { icon: "plus-circle", label: "Add" },
+            { icon: "eye", label: "Preview" },
+            { icon: "sliders", label: "Design" },
+            { icon: "zap", label: "Enhance" },
+          ] as const
+        ).map(({ icon, label }) => (
+          <Pressable key={label} style={styles.bottomNavItem}>
+            <Feather name={icon} size={22} color={label === "Add" ? "#7B3FE4" : "#9CA3AF"} />
+            <Text style={[styles.bottomNavLabel, label === "Add" && { color: "#7B3FE4" }]}>
+              {label}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
     </View>
   );
 }
@@ -809,6 +828,27 @@ const styles = StyleSheet.create({
   linkIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   linkTitle: { fontSize: 14, fontWeight: "600", color: "#1A1A1A", fontFamily: "Inter_600SemiBold" },
   linkClicks: { fontSize: 12, color: "#9CA3AF", fontFamily: "Inter_400Regular" },
+  bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#F0F0F0",
+    paddingTop: 10,
+  },
+  bottomNavItem: {
+    flex: 1,
+    alignItems: "center",
+    gap: 4,
+  },
+  bottomNavLabel: {
+    fontSize: 11,
+    color: "#9CA3AF",
+    fontFamily: "Inter_500Medium",
+  },
   linkActions: { flexDirection: "row", alignItems: "center", gap: 6 },
   linkActionBtn: {
     width: 30,

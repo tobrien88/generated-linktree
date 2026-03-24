@@ -87,7 +87,6 @@ const TIERS: TierConfig[] = [
           "Remove Linktree branding",
           "Social media icons & links",
           "Collect email & phone numbers — own your audience",
-          "Highlight key links with spotlight",
           "Redirect links (leap links)",
           "Social link scheduling",
           "Unique QR code with custom styling",
@@ -114,6 +113,7 @@ const TIERS: TierConfig[] = [
         heading: "Everything in Starter, plus",
         items: [
           "Full AI-personalized Linktree",
+          "Highlight key links with spotlight",
           "AI bio generation from social signals",
           "Personalized theme & color matching",
           "Smart link ordering by engagement",

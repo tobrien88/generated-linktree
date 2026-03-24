@@ -47,7 +47,6 @@ const TIER_DATA: Record<string, {
         heading: "Tools & Growth",
         items: [
           "Collect email & phone numbers — own your audience",
-          "Highlight key links with spotlight",
           "Redirect links (leap links)",
           "Social link scheduling",
           "Reduced seller fees — 9% transaction fee",
@@ -78,6 +77,7 @@ const TIER_DATA: Record<string, {
         heading: "Branding & Commerce",
         items: [
           "Custom logo upload",
+          "Highlight key links with spotlight",
           "Full-screen video background",
           "Link thumbnails & spotlight links",
           "Advanced Linktree Shops",

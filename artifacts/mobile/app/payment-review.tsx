@@ -30,10 +30,10 @@ const TIER_DATA: Record<string, {
 }> = {
   starter: {
     name: "Starter",
-    monthlyPrice: "$6.00",
-    annualMonthlyPrice: "$4.00",
-    annualTotalPrice: "$48.00",
-    annualSavePct: 33,
+    monthlyPrice: "$8.00",
+    annualMonthlyPrice: "$6.00",
+    annualTotalPrice: "$72.00",
+    annualSavePct: 25,
     trialLabel: null,
     ctaText: "Get started with Starter",
     gradient: ["#F59E0B", "#D97706"],
@@ -62,10 +62,10 @@ const TIER_DATA: Record<string, {
   },
   pro: {
     name: "Pro",
-    monthlyPrice: "$12.00",
-    annualMonthlyPrice: "$9.00",
-    annualTotalPrice: "$108.00",
-    annualSavePct: 25,
+    monthlyPrice: "$15.00",
+    annualMonthlyPrice: "$12.00",
+    annualTotalPrice: "$144.00",
+    annualSavePct: 20,
     trialLabel: "7-day free trial",
     ctaText: "Try Pro free for 7 days",
     gradient: ["#7B3FE4", "#5B22C4"],
@@ -107,10 +107,10 @@ const TIER_DATA: Record<string, {
   },
   premium: {
     name: "Premium",
-    monthlyPrice: "$30.00",
-    annualMonthlyPrice: "$24.00",
-    annualTotalPrice: "$288.00",
-    annualSavePct: 20,
+    monthlyPrice: "$35.00",
+    annualMonthlyPrice: "$30.00",
+    annualTotalPrice: "$360.00",
+    annualSavePct: 14,
     trialLabel: null,
     ctaText: "Get started with Premium",
     gradient: ["#B8860B", "#8B6914"],
@@ -149,7 +149,7 @@ export default function PaymentReviewScreen() {
   const insets = useSafeAreaInsets();
   const { selectedTier } = useOnboarding();
   const tier = TIER_DATA[selectedTier] ?? TIER_DATA.pro;
-  const [billing, setBilling] = useState<BillingCycle>("monthly");
+  const [billing, setBilling] = useState<BillingCycle>("annual");
 
   const isAnnual = billing === "annual";
   const displayPrice = isAnnual ? tier.annualMonthlyPrice : tier.monthlyPrice;

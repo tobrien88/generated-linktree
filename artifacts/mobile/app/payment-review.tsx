@@ -37,16 +37,17 @@ const TIER_DATA: Record<string, {
         heading: "Design & Branding",
         items: [
           "Custom color palettes",
-          "Remove Linktree branding",
           "Nova Earth terracotta palette — ready to activate",
-          "Social media icons",
+          "Remove Linktree branding",
+          "Social media icons & links",
+          "Unique QR code with custom styling",
         ],
       },
       {
         heading: "Tools & Support",
         items: [
+          "Collect email & phone numbers",
           "2 scheduled link time slots",
-          "Collect email addresses",
           "Priority email support",
         ],
       },
@@ -71,20 +72,20 @@ const TIER_DATA: Record<string, {
         ],
       },
       {
-        heading: "Branding & Visuals",
+        heading: "Branding & Commerce",
         items: [
           "Custom logo upload",
           "Full-screen video background",
           "Link thumbnails & spotlight links",
-          "Unlimited themes",
+          "Advanced Linktree Shops",
+          "Sell digital products & courses",
         ],
       },
       {
-        heading: "Growth & Commerce",
+        heading: "Growth & Analytics",
         items: [
           "Advanced analytics & UTM tracking",
           "Unlimited scheduling",
-          "Sell products & collect payments",
           "Leap links & auto-redirects",
           "Priority 24/7 support",
         ],
@@ -104,7 +105,7 @@ const TIER_DATA: Record<string, {
         items: [
           "0% transaction fees on all sales",
           "Custom domain (yourname.com)",
-          "White-label — no Linktree branding",
+          "White-label — no Linktree branding anywhere",
         ],
       },
       {

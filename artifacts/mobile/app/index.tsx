@@ -171,12 +171,12 @@ export default function LandingScreen() {
         {/* ── Blue "Create and customize" section ─────── */}
         <View style={styles.blueSection}>
           <Text style={styles.blueSectionTitle}>
-            Automatically create your Linktree in seconds
+            Create and customize your Linktree in minutes
           </Text>
           <Text style={styles.blueSectionBody}>
             Connect all your content across social media, websites, stores and
-            more in one link in bio. Linktree automatically creates your page to
-            match your brand and get more clicks, customize it from there.
+            more in one link in bio. Customize every detail or let Linktree
+            automatically enhance it to match your brand and drive more clicks.
           </Text>
 
           <Pressable
@@ -249,7 +249,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderRadius: 20,
-    backgroundColor: "#F3F4F6",
+    borderWidth: 1.5,
+    borderColor: "#D1D5DB",
+    backgroundColor: "transparent",
   },
   loginText: {
     fontSize: 13,

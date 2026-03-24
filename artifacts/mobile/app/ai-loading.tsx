@@ -178,21 +178,27 @@ export default function AILoadingScreen() {
       style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}
     >
       {/* Particle dots */}
-      {Array.from({ length: 20 }).map((_, i) => (
-        <View
-          key={i}
-          style={[
-            styles.particle,
-            {
-              left: `${(i * 37 + 10) % 90}%` as any,
-              top: `${(i * 53 + 15) % 85}%` as any,
-              opacity: 0.12 + (i % 5) * 0.06,
-              width: 2 + (i % 3),
-              height: 2 + (i % 3),
-            },
-          ]}
-        />
-      ))}
+      {Array.from({ length: 20 }).map((_, i) => {
+        const SCREEN_W = Dimensions.get("window").width;
+        const SCREEN_H = Dimensions.get("window").height;
+        const leftFrac = ((i * 37 + 10) % 90) / 100;
+        const topFrac = ((i * 53 + 15) % 85) / 100;
+        return (
+          <View
+            key={i}
+            style={[
+              styles.particle,
+              {
+                left: leftFrac * SCREEN_W,
+                top: topFrac * SCREEN_H,
+                opacity: 0.12 + (i % 5) * 0.06,
+                width: 2 + (i % 3),
+                height: 2 + (i % 3),
+              },
+            ]}
+          />
+        );
+      })}
 
       <View style={styles.centerSection}>
         {/* Orbit system */}

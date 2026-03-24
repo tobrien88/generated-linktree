@@ -82,7 +82,7 @@ const TIER_DATA: Record<string, {
           "Link thumbnails & spotlight links",
           "Advanced Linktree Shops",
           "Sell digital products & courses",
-          "Reduced 1% seller fee on Shops",
+          "Reduced seller fees — 9% transaction fee",
         ],
       },
       {

@@ -486,23 +486,52 @@ export default function AdminScreen() {
               <Text style={styles.addLinkText}>Add link</Text>
             </Pressable>
           </View>
-          {NOVA_LINKS.map((link) => (
-            <View key={link.id} style={styles.linkItem}>
-              <View style={[styles.linkIcon, { backgroundColor: LINK_COLORS[link.id] + "18" }]}>
-                <PlatformIcon platformId={LINK_PLATFORM_IDS[link.id]} size={16} color={LINK_COLORS[link.id]} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.linkTitle} numberOfLines={1}>{link.title}</Text>
-                <Text style={styles.linkClicks}>{link.clicks.toLocaleString()} clicks</Text>
-              </View>
-              <Pressable
-                style={[styles.toggleBtn, !!linkToggles[link.id] && styles.toggleBtnOn]}
-                onPress={() => handleToggleLink(link.id)}
+          {NOVA_LINKS.map((link) => {
+            const isTikTok = link.id === "tiktok";
+            const isProHighlighted = isTikTok && (selectedTier === "pro" || selectedTier === "premium");
+            const starterAccent = selectedTier === "starter" ? "#C9614A" : LINK_COLORS[link.id];
+            const iconBg = selectedTier === "starter"
+              ? "#C9614A18"
+              : LINK_COLORS[link.id] + "18";
+            return (
+              <View
+                key={link.id}
+                style={[
+                  styles.linkItem,
+                  isProHighlighted && styles.linkItemHighlighted,
+                ]}
               >
-                <View style={[styles.toggleThumb, !!linkToggles[link.id] && styles.toggleThumbOn]} />
-              </Pressable>
-            </View>
-          ))}
+                {isProHighlighted && (
+                  <View style={styles.featuredLinkBadge}>
+                    <Feather name="zap" size={9} color="#7B3FE4" />
+                    <Text style={styles.featuredLinkBadgeText}>Featured</Text>
+                  </View>
+                )}
+                <View style={[styles.linkIcon, { backgroundColor: iconBg }]}>
+                  <PlatformIcon
+                    platformId={LINK_PLATFORM_IDS[link.id]}
+                    size={16}
+                    color={selectedTier === "starter" ? starterAccent : LINK_COLORS[link.id]}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={[styles.linkTitle, isProHighlighted && { color: "#7B3FE4" }]}
+                    numberOfLines={1}
+                  >
+                    {link.title}
+                  </Text>
+                  <Text style={styles.linkClicks}>{link.clicks.toLocaleString()} clicks</Text>
+                </View>
+                <Pressable
+                  style={[styles.toggleBtn, !!linkToggles[link.id] && styles.toggleBtnOn]}
+                  onPress={() => handleToggleLink(link.id)}
+                >
+                  <View style={[styles.toggleThumb, !!linkToggles[link.id] && styles.toggleThumbOn]} />
+                </Pressable>
+              </View>
+            );
+          })}
         </View>
 
         <View style={{ height: insets.bottom + (Platform.OS === "web" ? 34 : 30) }} />
@@ -516,7 +545,7 @@ export default function AdminScreen() {
         <View style={styles.floatingCircleOuter}>
           <View style={styles.floatingCircleInner}>
             <Text style={styles.floatingCircleCount}>{completedCount}/{totalCount}</Text>
-            <Text style={styles.floatingCircleLabel}>done</Text>
+            <Text style={styles.floatingCircleLabel}>Share{"\n"}to finish</Text>
           </View>
         </View>
       </Pressable>
@@ -742,6 +771,32 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: "#F3F4F6",
+    flexWrap: "wrap",
+  },
+  linkItemHighlighted: {
+    backgroundColor: "#F8F6FF",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    borderTopWidth: 0,
+    marginTop: 4,
+    borderWidth: 1,
+    borderColor: "#E0D8FF",
+  },
+  featuredLinkBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "#F0E8FF",
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    width: "100%",
+    marginBottom: 4,
+  },
+  featuredLinkBadgeText: {
+    fontSize: 10,
+    color: "#7B3FE4",
+    fontFamily: "Inter_700Bold",
   },
   linkIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   linkTitle: { fontSize: 14, fontWeight: "600", color: "#1A1A1A", fontFamily: "Inter_600SemiBold" },

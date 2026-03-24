@@ -84,11 +84,11 @@ const TIERS: TierConfig[] = [
           "Custom color palettes",
           "Remove Linktree branding",
           "Social media icons & links",
-          "Collect email & phone numbers",
+          "Collect email & phone numbers — own your audience",
+          "Highlight key links with spotlight",
           "Redirect links (leap links)",
           "Social link scheduling",
           "Unique QR code with custom styling",
-          "Reduced 5% seller fee on Shops",
           "Priority email support",
         ],
       },
@@ -120,7 +120,7 @@ const TIERS: TierConfig[] = [
           "Automated Instagram DM replies",
           "Link shortener",
           "Email marketing integrations",
-          "Reduced 1% seller fee on Shops",
+          "Affiliate commissions for creators",
         ],
       },
       {
@@ -152,7 +152,7 @@ const TIERS: TierConfig[] = [
       {
         heading: "Everything in Pro, plus",
         items: [
-          "0% transaction fees — keep all your earnings",
+          "0% transaction fees — keep 100% of earnings",
           "Custom domain (yourname.com)",
           "White-label — no Linktree branding anywhere",
           "Unlimited automated Instagram replies",

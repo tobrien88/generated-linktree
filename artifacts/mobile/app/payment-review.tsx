@@ -46,10 +46,10 @@ const TIER_DATA: Record<string, {
       {
         heading: "Tools & Growth",
         items: [
+          "Collect email & phone numbers — own your audience",
+          "Highlight key links with spotlight",
           "Redirect links (leap links)",
           "Social link scheduling",
-          "Collect email & phone numbers",
-          "Reduced 5% seller fee on Shops",
           "Priority email support",
         ],
       },
@@ -91,6 +91,7 @@ const TIER_DATA: Record<string, {
           "Automated Instagram DM replies",
           "Link shortener",
           "Email marketing integrations",
+          "Affiliate commissions for creators",
           "Priority 24/7 support",
         ],
       },
@@ -107,7 +108,7 @@ const TIER_DATA: Record<string, {
       {
         heading: "Creator Commerce",
         items: [
-          "0% transaction fees — keep all your earnings",
+          "0% transaction fees — keep 100% of earnings",
           "Custom domain (yourname.com)",
           "White-label — no Linktree branding anywhere",
         ],

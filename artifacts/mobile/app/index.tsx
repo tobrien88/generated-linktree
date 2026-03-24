@@ -158,6 +158,7 @@ export default function LandingScreen() {
         <View
           style={{
             height: insets.bottom + (Platform.OS === "web" ? 34 : 20),
+            backgroundColor: "#3D4FDB",
           }}
         />
       </ScrollView>

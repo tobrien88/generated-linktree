@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Platform,
   Pressable,
@@ -14,23 +14,28 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
 
+type BillingCycle = "monthly" | "annual";
 type SectionConfig = { heading: string; items: string[] };
 
 const TIER_DATA: Record<string, {
   name: string;
-  price: string;
+  monthlyPrice: string;
+  annualMonthlyPrice: string;
+  annualTotalPrice: string;
+  annualSavePct: number;
   trialLabel: string | null;
   ctaText: string;
-  billingNote: string;
   gradient: [string, string];
   sections: SectionConfig[];
 }> = {
   starter: {
     name: "Starter",
-    price: "$6.00",
+    monthlyPrice: "$6.00",
+    annualMonthlyPrice: "$4.00",
+    annualTotalPrice: "$48.00",
+    annualSavePct: 33,
     trialLabel: null,
     ctaText: "Get started with Starter",
-    billingNote: "Billed $6.00/month. Cancel anytime.",
     gradient: ["#F59E0B", "#D97706"],
     sections: [
       {
@@ -57,10 +62,12 @@ const TIER_DATA: Record<string, {
   },
   pro: {
     name: "Pro",
-    price: "$12.00",
+    monthlyPrice: "$12.00",
+    annualMonthlyPrice: "$9.00",
+    annualTotalPrice: "$108.00",
+    annualSavePct: 25,
     trialLabel: "7-day free trial",
     ctaText: "Try Pro free for 7 days",
-    billingNote: "Free for 7 days, then $12.00/month. Cancel anytime.",
     gradient: ["#7B3FE4", "#5B22C4"],
     sections: [
       {
@@ -92,7 +99,6 @@ const TIER_DATA: Record<string, {
           "Automated Instagram DM replies",
           "Link shortener",
           "Email marketing integrations",
-          "Reduced seller fees — 9% transaction fee",
           "Affiliate commissions for creators",
           "Priority 24/7 support",
         ],
@@ -101,10 +107,12 @@ const TIER_DATA: Record<string, {
   },
   premium: {
     name: "Premium",
-    price: "$30.00",
+    monthlyPrice: "$30.00",
+    annualMonthlyPrice: "$24.00",
+    annualTotalPrice: "$288.00",
+    annualSavePct: 20,
     trialLabel: null,
     ctaText: "Get started with Premium",
-    billingNote: "Billed $30.00/month. Cancel anytime.",
     gradient: ["#B8860B", "#8B6914"],
     sections: [
       {
@@ -141,6 +149,15 @@ export default function PaymentReviewScreen() {
   const insets = useSafeAreaInsets();
   const { selectedTier } = useOnboarding();
   const tier = TIER_DATA[selectedTier] ?? TIER_DATA.pro;
+  const [billing, setBilling] = useState<BillingCycle>("monthly");
+
+  const isAnnual = billing === "annual";
+  const displayPrice = isAnnual ? tier.annualMonthlyPrice : tier.monthlyPrice;
+  const billingNote = isAnnual
+    ? `Billed ${tier.annualTotalPrice}/year. Cancel anytime.`
+    : tier.trialLabel
+    ? `Free for 7 days. Then ${tier.monthlyPrice}/month. Cancel anytime.`
+    : `Billed ${tier.monthlyPrice}/month. Cancel anytime.`;
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
@@ -159,6 +176,31 @@ export default function PaymentReviewScreen() {
         </Text>
       </View>
 
+      {/* Billing toggle */}
+      <View style={styles.toggleWrap}>
+        <View style={styles.togglePill}>
+          <Pressable
+            style={[styles.toggleOption, billing === "monthly" && styles.toggleOptionActive]}
+            onPress={() => setBilling("monthly")}
+          >
+            <Text style={[styles.toggleText, billing === "monthly" && styles.toggleTextActive]}>
+              Monthly
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.toggleOption, billing === "annual" && styles.toggleOptionActive]}
+            onPress={() => setBilling("annual")}
+          >
+            <Text style={[styles.toggleText, billing === "annual" && styles.toggleTextActive]}>
+              Annual
+            </Text>
+            <View style={styles.saveBadge}>
+              <Text style={styles.saveBadgeText}>Save {tier.annualSavePct}%</Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -174,10 +216,16 @@ export default function PaymentReviewScreen() {
             <View>
               <Text style={styles.planLabel}>Your plan</Text>
               <Text style={styles.planName}>Linktree {tier.name}</Text>
+              <Text style={styles.planCycleLabel}>{isAnnual ? "Billed annually" : "Billed monthly"}</Text>
             </View>
             <View style={styles.planPriceBlock}>
-              <Text style={styles.planPrice}>{tier.price}</Text>
+              <Text style={styles.planPrice}>{displayPrice}</Text>
               <Text style={styles.planBilling}>/month</Text>
+              {isAnnual && (
+                <View style={styles.annualSaveChip}>
+                  <Text style={styles.annualSaveChipText}>Save {tier.annualSavePct}%</Text>
+                </View>
+              )}
             </View>
           </View>
 
@@ -236,7 +284,7 @@ export default function PaymentReviewScreen() {
         {/* Billing notice */}
         <View style={styles.billingNote}>
           <Feather name="info" size={14} color="#9CA3AF" />
-          <Text style={styles.billingNoteText}>{tier.billingNote}</Text>
+          <Text style={styles.billingNoteText}>{billingNote}</Text>
         </View>
 
         <View style={{ height: 20 }} />
@@ -251,7 +299,7 @@ export default function PaymentReviewScreen() {
           <Feather name="zap" size={18} color="#1D3C34" />
           <Text style={styles.startBtnText}>{tier.ctaText}</Text>
         </Pressable>
-        <Text style={styles.footerNote}>{tier.billingNote}</Text>
+        <Text style={styles.footerNote}>{billingNote}</Text>
       </View>
     </View>
   );
@@ -266,6 +314,57 @@ const styles = StyleSheet.create({
   progressFill: { height: 4, backgroundColor: "#7B3FE4", borderRadius: 2 },
   headerTitle: { fontSize: 24, fontWeight: "700", color: "#1A1A1A", fontFamily: "Inter_700Bold", marginTop: 8 },
   headerSub: { fontSize: 14, color: "#6B7280", fontFamily: "Inter_400Regular", lineHeight: 20 },
+
+  toggleWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 2,
+    alignItems: "center",
+  },
+  togglePill: {
+    flexDirection: "row",
+    backgroundColor: "#F3F4F6",
+    borderRadius: 50,
+    padding: 4,
+    gap: 2,
+  },
+  toggleOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 50,
+  },
+  toggleOptionActive: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  toggleText: {
+    fontSize: 14,
+    color: "#9CA3AF",
+    fontFamily: "Inter_500Medium",
+  },
+  toggleTextActive: {
+    color: "#1A1A1A",
+    fontFamily: "Inter_600SemiBold",
+  },
+  saveBadge: {
+    backgroundColor: "#DCFCE7",
+    borderRadius: 50,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  saveBadgeText: {
+    fontSize: 11,
+    color: "#16A34A",
+    fontFamily: "Inter_600SemiBold",
+  },
+
   scrollContent: { paddingHorizontal: 20, paddingTop: 16 },
   planCard: { borderRadius: 20, padding: 20, marginBottom: 14 },
   planCardTop: {
@@ -275,9 +374,23 @@ const styles = StyleSheet.create({
   },
   planLabel: { fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter_500Medium" },
   planName: { fontSize: 22, fontWeight: "700", color: "#FFFFFF", fontFamily: "Inter_700Bold" },
-  planPriceBlock: { alignItems: "flex-end" },
+  planCycleLabel: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular", marginTop: 2 },
+  planPriceBlock: { alignItems: "flex-end", gap: 4 },
   planPrice: { fontSize: 30, fontWeight: "800", color: "#C5E84F", fontFamily: "Inter_700Bold" },
   planBilling: { fontSize: 12, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular" },
+  annualSaveChip: {
+    backgroundColor: "rgba(197,232,79,0.22)",
+    borderRadius: 50,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: "rgba(197,232,79,0.45)",
+  },
+  annualSaveChipText: {
+    fontSize: 11,
+    color: "#C5E84F",
+    fontFamily: "Inter_600SemiBold",
+  },
   planDivider: { height: 1, backgroundColor: "rgba(255,255,255,0.18)", marginVertical: 14 },
   trialRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   trialText: { fontSize: 14, color: "#C5E84F", fontFamily: "Inter_600SemiBold" },

@@ -12,7 +12,12 @@ import {
   Text,
   View,
 } from "react-native";
+import { SvgXml } from "react-native-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const TIKTOK_SVG = `<svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.76a8.24 8.24 0 0 0 4.84 1.55V6.88a4.87 4.87 0 0 1-1.07-.19z"/>
+</svg>`;
 
 const NOVA_BIO =
   "Chasing sunsets & street food across 40+ countries. Content creator, travel guide author, and certified coffee snob. She/her.";
@@ -25,14 +30,19 @@ const NOVA_LINKS = [
     thumbnail: require("../assets/images/monkey-thai-market.png"),
     iconName: null,
     iconColor: "#22C55E",
+    iconBg: null,
+    iconSize: 16,
   },
   {
     id: "tiktok",
     title: "Follow me on TikTok",
     subtitle: "@novaonthemove · 284K",
     thumbnail: null,
-    iconName: "music-note" as const,
-    iconColor: "#E1306C",
+    iconName: null,
+    iconColor: "#FFFFFF",
+    iconBg: "#010101",
+    iconSize: 22,
+    useSvg: true,
     featured: true,
   },
   {
@@ -42,6 +52,8 @@ const NOVA_LINKS = [
     thumbnail: null,
     iconName: "camera" as const,
     iconColor: "#7B3FE4",
+    iconBg: null,
+    iconSize: 22,
   },
   {
     id: "youtube",
@@ -50,6 +62,8 @@ const NOVA_LINKS = [
     thumbnail: null,
     iconName: "play-circle" as const,
     iconColor: "#FF0000",
+    iconBg: null,
+    iconSize: 22,
   },
 ];
 
@@ -85,6 +99,7 @@ const RATIONALE = [
 ];
 
 function ProLinkButton({ link }: { link: typeof NOVA_LINKS[0] }) {
+  const iconBgColor = link.iconBg ?? ((link.iconColor ?? "#888") + "28");
   return (
     <View style={[styles.proLink, link.featured && styles.proLinkFeatured]}>
       {link.thumbnail ? (
@@ -94,12 +109,16 @@ function ProLinkButton({ link }: { link: typeof NOVA_LINKS[0] }) {
           contentFit="cover"
         />
       ) : (
-        <View style={[styles.linkIconBox, { backgroundColor: (link.iconColor ?? "#888") + "28" }]}>
-          <MaterialCommunityIcons
-            name={(link.iconName as "camera") ?? "link"}
-            size={16}
-            color={link.iconColor ?? "#888"}
-          />
+        <View style={[styles.linkIconBox, { backgroundColor: iconBgColor }]}>
+          {link.useSvg ? (
+            <SvgXml xml={TIKTOK_SVG} width={link.iconSize ?? 20} height={link.iconSize ?? 20} />
+          ) : (
+            <MaterialCommunityIcons
+              name={(link.iconName as "camera") ?? "link"}
+              size={link.iconSize ?? 16}
+              color={link.iconColor ?? "#888"}
+            />
+          )}
         </View>
       )}
       <Text style={styles.proLinkText} numberOfLines={1}>{link.title}</Text>
@@ -337,13 +356,20 @@ const styles = StyleSheet.create({
   linkThumb: {
     width: 38,
     height: 38,
-    borderRadius: 10,
+    borderRadius: 50,
     flexShrink: 0,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  linkThumbInner: {
+    width: 26,
+    height: 26,
   },
   linkIconBox: {
     width: 38,
     height: 38,
-    borderRadius: 10,
+    borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,

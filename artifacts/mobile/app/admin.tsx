@@ -26,6 +26,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
 import { PlatformIcon } from "@/components/PlatformIcon";
+import { LinktreeLogo } from "@/components/LinktreeLogo";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const SHEET_HEIGHT = SCREEN_HEIGHT * 0.62;
@@ -320,8 +321,7 @@ export default function AdminScreen() {
       {/* Top nav */}
       <View style={styles.topNav}>
         <View style={styles.navLogoRow}>
-          <Text style={styles.navAsterisk}>*</Text>
-          <Text style={styles.navLogo}>linktree</Text>
+          <LinktreeLogo height={20} />
         </View>
         <View style={styles.navRight}>
           <Pressable

@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
+import { LinktreeLogo } from "@/components/LinktreeLogo";
 
 type PaymentMethod = "card" | "googlepay" | "paypal";
 
@@ -53,10 +54,7 @@ export default function PaymentScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Logo */}
-        <View style={styles.logoRow}>
-          <Text style={styles.logoText}>Linktree</Text>
-          <Text style={styles.logoStar}>✳</Text>
-        </View>
+        <LinktreeLogo height={22} />
 
         {/* Back */}
         <Pressable style={styles.backBtn} onPress={() => router.back()}>

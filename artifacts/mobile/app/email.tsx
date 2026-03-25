@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOnboarding } from "@/context/OnboardingContext";
+import { LinktreeLogo } from "@/components/LinktreeLogo";
 
 export default function EmailScreen() {
   const insets = useSafeAreaInsets();
@@ -26,10 +27,7 @@ export default function EmailScreen() {
     >
       <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}>
         {/* Logo */}
-        <View style={styles.logoRow}>
-          <Text style={styles.logoAsterisk}>*</Text>
-          <Text style={styles.logoText}>Linktree</Text>
-        </View>
+        <LinktreeLogo height={22} />
 
         {/* Progress */}
         <View style={styles.progressBar}>

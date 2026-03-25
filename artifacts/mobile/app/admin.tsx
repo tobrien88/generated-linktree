@@ -315,7 +315,7 @@ export default function AdminScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.bg }]}>
-      <View style={{ height: insets.top + (Platform.OS === "web" ? 67 : 0) }} />
+      <View style={{ height: insets.top + (Platform.OS === "web" ? 44 : 0) }} />
 
       {/* Top nav */}
       <View style={styles.topNav}>

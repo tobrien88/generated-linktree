@@ -175,7 +175,7 @@ export default function AILoadingScreen() {
   return (
     <LinearGradient
       colors={["#0A0A14", "#0F0A22", "#120825"]}
-      style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}
+      style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}
     >
       {/* Particle dots */}
       {Array.from({ length: 20 }).map((_, i) => {

@@ -134,7 +134,7 @@ export default function AIPreviewScreen() {
     <View style={[
       styles.container,
       {
-        paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0),
+        paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0),
         ...(Platform.OS === "web" ? { height: "100vh" as unknown as number } : {}),
       },
     ]}>

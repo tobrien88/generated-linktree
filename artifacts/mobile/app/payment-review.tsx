@@ -169,7 +169,7 @@ export default function PaymentReviewScreen() {
     : `Billed ${tier.monthlyPrice}/month. Cancel anytime.`;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
+    <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}>
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backBtn} hitSlop={8}>

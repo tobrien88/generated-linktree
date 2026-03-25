@@ -49,7 +49,7 @@ export default function PaymentScreen() {
   const trialEndDate = "Mar 31st, 2026";
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
+    <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Logo */}

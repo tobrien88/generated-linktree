@@ -84,7 +84,7 @@ export default function EditBioScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
+      <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}>
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} style={styles.backBtn} hitSlop={8}>

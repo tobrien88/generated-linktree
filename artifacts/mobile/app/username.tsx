@@ -24,7 +24,7 @@ export default function UsernameScreen() {
       style={styles.flex}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 16) }]}>
+      <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 16) }]}>
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} style={styles.backBtn} hitSlop={8}>

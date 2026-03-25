@@ -24,7 +24,7 @@ export default function EmailScreen() {
       style={styles.flex}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 67 : 0) }]}>
+      <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}>
         {/* Logo */}
         <View style={styles.logoRow}>
           <Text style={styles.logoAsterisk}>*</Text>

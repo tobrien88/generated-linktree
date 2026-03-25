@@ -599,19 +599,6 @@ export default function AdminScreen() {
         <View style={{ height: insets.bottom + (Platform.OS === "web" ? 120 : 110) }} />
       </ScrollView>
 
-      {/* Floating bottom-left circular progress */}
-      <Pressable
-        style={[styles.floatingCircle, { bottom: insets.bottom + (Platform.OS === "web" ? 50 : 36) }]}
-        onPress={handleShare}
-      >
-        <ProgressRing progress={completedCount / totalCount} bgColor="#FFFFFF">
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.floatingCircleCount}>{completedCount}/{totalCount}</Text>
-            <Text style={styles.floatingCircleLabel}>Share{"\n"}to finish</Text>
-          </View>
-        </ProgressRing>
-      </Pressable>
-
       <ShareBottomSheet visible={shareOpen} onClose={() => setShareOpen(false)} />
 
       {/* Bottom navigation bar */}
@@ -933,47 +920,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   toggleThumbOn: { alignSelf: "flex-end" },
-  floatingCircle: {
-    position: "absolute",
-    left: 16,
-    width: 68,
-    height: 68,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    elevation: 8,
-  },
-  floatingCircleOuter: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    borderWidth: 5,
-    borderColor: "#C5E84F",
-    borderRightColor: "#E5E7EB",
-    borderBottomColor: "#E5E7EB",
-    backgroundColor: "#FFFFFF",
-    transform: [{ rotate: "-45deg" }],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  floatingCircleInner: {
-    transform: [{ rotate: "45deg" }],
-    alignItems: "center",
-  },
-  floatingCircleCount: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#1D3C34",
-    fontFamily: "Inter_700Bold",
-  },
-  floatingCircleLabel: {
-    fontSize: 9,
-    color: "#9CA3AF",
-    fontFamily: "Inter_500Medium",
-  },
   // Share bottom sheet
   sheetOverlayContainer: { flex: 1 },
   sheetOverlay: {

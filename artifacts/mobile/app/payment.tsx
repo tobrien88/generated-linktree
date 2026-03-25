@@ -54,7 +54,9 @@ export default function PaymentScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Logo */}
-        <LinktreeLogo height={22} />
+        <View style={{ marginTop: 12, marginBottom: 8 }}>
+          <LinktreeLogo height={22} />
+        </View>
 
         {/* Back */}
         <Pressable style={styles.backBtn} onPress={() => router.back()}>

@@ -27,7 +27,9 @@ export default function EmailScreen() {
     >
       <View style={[styles.container, { paddingTop: insets.top + (Platform.OS === "web" ? 44 : 0) }]}>
         {/* Logo */}
-        <LinktreeLogo height={22} />
+        <View style={{ paddingLeft: 20, paddingTop: 10 }}>
+          <LinktreeLogo height={22} />
+        </View>
 
         {/* Progress */}
         <View style={styles.progressBar}>
